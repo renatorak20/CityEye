@@ -21,4 +21,9 @@
     <color name="mySecondary">#885053</color>
     <color name="myTertiary">#777DA7</color>
 
+    <color name="colorLightGray">#ececec</color>
+    <color name="colorGray">#dedede</color>
+    <color name="colorDarkGray">#b4b4b4</color>
+    <color name="colorBlue">#2962FF</color>
+
 </resources>

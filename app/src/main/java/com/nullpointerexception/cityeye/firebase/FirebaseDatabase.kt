@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -18,6 +19,7 @@ import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.entities.Answer
 import com.nullpointerexception.cityeye.entities.Event
 import com.nullpointerexception.cityeye.entities.MapItem
+import com.nullpointerexception.cityeye.entities.Message
 import com.nullpointerexception.cityeye.entities.Problem
 import com.nullpointerexception.cityeye.entities.SupportedCities
 import com.nullpointerexception.cityeye.entities.User
@@ -99,7 +101,11 @@ object FirebaseDatabase {
                             context.resources.getString(R.string.problemUploaded),
                             Toast.LENGTH_SHORT
                         ).show()
-                        continuation.resume(true)
+                        FirebaseDatabase.getInstance().reference.child("messages")
+                            .setValue(problemID)
+                            .addOnSuccessListener {
+                                continuation.resume(true)
+                            }
                     }.addOnFailureListener {
                         continuation.resume(false)
                     }
@@ -479,5 +485,29 @@ object FirebaseDatabase {
         docRef.update("displayName", "User$shuffledNumber")
     }
 
+    suspend fun getProblemMessages(problemID: String): ArrayList<Message>? =
+        suspendCoroutine { continuation ->
+            val docRef = Firebase.firestore.collection("messages").document(problemID)
+                .collection("problemMessages")
+            docRef.get()
+                .addOnSuccessListener { document ->
+                    val documents = document.documents
+                    if (documents.size == 0) {
+                        continuation.resume(null)
+                    } else {
+                        val messageArray = arrayListOf<Message>()
+                        for (document in documents) {
+                            val message = document.toObject(Message::class.java)
+                            if (message != null) {
+                                messageArray.add(message)
+                            }
+                        }
+                        continuation.resume(messageArray)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d(TAG, "Error getting documents: ", exception)
+                }
+        }
 
 }

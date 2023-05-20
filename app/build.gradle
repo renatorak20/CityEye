@@ -74,6 +74,9 @@ dependencies {
     implementation "com.google.firebase:firebase-firestore:24.4.4"
     implementation "com.firebaseui:firebase-ui-auth:8.0.2"
     implementation "com.firebaseui:firebase-ui-firestore:8.0.0"
+    implementation "com.google.firebase:firebase-database"
+    implementation 'com.google.firebase:firebase-database-ktx'
+    implementation 'com.firebaseui:firebase-ui-database:8.0.2'
 
     //database
     implementation platform('com.google.firebase:firebase-bom:31.2.3')
@@ -111,7 +114,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0-beta01'
+    implementation 'com.google.android.material:material:1.10.0-alpha03'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation "androidx.activity:activity-ktx:1.6.1"
