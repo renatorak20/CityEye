@@ -2,6 +2,7 @@ package com.nullpointerexception.cityeye
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,6 +12,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.nullpointerexception.cityeye.data.ProblemDetailViewModel
@@ -19,6 +21,7 @@ import com.nullpointerexception.cityeye.entities.Message
 import com.nullpointerexception.cityeye.ui.adapters.MessagesAdapter
 import com.nullpointerexception.cityeye.util.ButtonObserver
 import com.nullpointerexception.cityeye.util.OtherUtilities
+
 
 class ProblemDetailActivity : AppCompatActivity() {
 
@@ -63,10 +66,11 @@ class ProblemDetailActivity : AppCompatActivity() {
             if (problem.uid == Firebase.auth.uid) {
                 manager = LinearLayoutManager(this)
                 manager.reverseLayout = true
-                manager.stackFromEnd = true
                 binding.messageRecyclerView.adapter = chatAdapter
                 binding.messageRecyclerView.layoutManager = manager
                 binding.fab.visibility = View.VISIBLE
+
+
             }
 
         }
@@ -74,10 +78,11 @@ class ProblemDetailActivity : AppCompatActivity() {
         val query = FirebaseFirestore.getInstance().collection("messages")
             .document(intent.getStringExtra("problemID")!!)
             .collection("problemMessages")
+            .orderBy("time", Query.Direction.DESCENDING)
         val options: FirestoreRecyclerOptions<Message> = FirestoreRecyclerOptions.Builder<Message>()
             .setQuery(query, Message::class.java)
             .build()
-        chatAdapter = MessagesAdapter(options, Firebase.auth.currentUser?.displayName)
+        chatAdapter = MessagesAdapter(options, Firebase.auth.currentUser, this)
 
         viewModel.getAnswer().observe(this) { answer ->
             if (answer == null) {
@@ -117,16 +122,25 @@ class ProblemDetailActivity : AppCompatActivity() {
 
         binding.sendButton.setOnClickListener {
             val text = binding.messageEditText.text.toString().trim()
-            if (text.isNotEmpty()) {
-                //val message = Message(text, Firebase.auth.currentUser?.displayName, System.currentTimeMillis())
-                //viewModel.sendMessage(message, viewModel.getProblem().value?.problemID!!)
-                binding.messageEditText.setText("")
+            if (text.isNotEmpty() && text.length > 10) {
+                if (chatAdapter.itemCount > 1 && chatAdapter.getItem(1).name != Firebase.auth.currentUser?.displayName) {
+                    viewModel.sendMessage(text)
+                    binding.messageEditText.setText("")
+                } else {
+                    Toast.makeText(this, "Please wait for respond first!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            } else {
+                Toast.makeText(this, "Please enter more than 10 characters!", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
 
     override fun onStart() {
         super.onStart()
+        binding.messageRecyclerView.recycledViewPool.clear()
+        chatAdapter.notifyDataSetChanged()
         chatAdapter.startListening()
     }
 

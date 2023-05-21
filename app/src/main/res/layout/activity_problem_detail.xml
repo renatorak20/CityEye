@@ -7,7 +7,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -166,8 +167,7 @@
         android:layout_margin="30dp"
         android:layout_gravity="end|bottom"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <FrameLayout
         android:id="@+id/standard_bottom_sheet"
@@ -175,35 +175,66 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:behavior_peekHeight="0dp"
+        android:maxHeight="700dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/messageRecyclerView"
+        <LinearLayout
+            android:id="@+id/linear"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white" />
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/messageEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:layout_gravity="center"
-            android:padding="10dp"
-            android:background="@drawable/edit_text_shadow"
-            android:hint="Say something..."
-            android:inputType="text" />
+            <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+                android:id="@+id/drag_handle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:enabled="false"
-            android:src="@drawable/outline_send_gray_24" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/messageRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent" />
 
+            <RelativeLayout
+                android:id="@+id/editArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/messageEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="367dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="?attr/colorBlack"
+                    android:layout_toStartOf="@+id/sendButton"
+                    android:layout_weight="1"
+                    android:hint="Say something..."
+                    android:background="@drawable/edit_text_border"
+                    android:inputType="text"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/sendButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:padding="10dp"
+                    android:src="@drawable/outline_send_gray_24"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    app:tint="@color/colorBlue"
+                    android:background="?android:attr/selectableItemBackground" />
+
+            </RelativeLayout>
+        </LinearLayout>
     </FrameLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

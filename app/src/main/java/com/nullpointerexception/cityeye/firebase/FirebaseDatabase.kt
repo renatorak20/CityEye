@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
@@ -28,6 +29,7 @@ import com.nullpointerexception.cityeye.util.NetworkUtil
 import com.nullpointerexception.cityeye.util.OtherUtilities
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Date
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -277,7 +279,6 @@ object FirebaseDatabase {
         return isDeleted
     }
 
-
     suspend fun getUser(userID: String): User? = suspendCoroutine { continuation ->
         val docRef = Firebase.firestore.collection("users").document(userID)
         docRef.get()
@@ -332,7 +333,6 @@ object FirebaseDatabase {
                 }
         }
 
-
     suspend fun getUserNotifications(notifications: List<String>): List<UserNotification> =
         suspendCoroutine { continuation ->
             if (notifications.isNotEmpty()) {
@@ -359,7 +359,6 @@ object FirebaseDatabase {
                 continuation.resume(emptyList())
             }
         }
-
 
     suspend fun getAllProblems(): List<Problem> =
         suspendCoroutine { continuation ->
@@ -485,29 +484,20 @@ object FirebaseDatabase {
         docRef.update("displayName", "User$shuffledNumber")
     }
 
-    suspend fun getProblemMessages(problemID: String): ArrayList<Message>? =
-        suspendCoroutine { continuation ->
-            val docRef = Firebase.firestore.collection("messages").document(problemID)
-                .collection("problemMessages")
-            docRef.get()
-                .addOnSuccessListener { document ->
-                    val documents = document.documents
-                    if (documents.size == 0) {
-                        continuation.resume(null)
-                    } else {
-                        val messageArray = arrayListOf<Message>()
-                        for (document in documents) {
-                            val message = document.toObject(Message::class.java)
-                            if (message != null) {
-                                messageArray.add(message)
-                            }
-                        }
-                        continuation.resume(messageArray)
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(TAG, "Error getting documents: ", exception)
-                }
-        }
+    suspend fun sendMessage(problemID: String, text: String, user: FirebaseUser) {
+        val ref = Firebase.firestore.collection("messages").document(problemID)
+            .collection("problemMessages")
+
+        ref.add(
+            Message(
+                text,
+                user.displayName,
+                user.photoUrl.toString(),
+                user.uid,
+                Instant.now().epochSecond.toInt()
+            )
+        )
+
+    }
 
 }
