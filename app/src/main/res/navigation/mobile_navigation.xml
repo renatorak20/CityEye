@@ -18,10 +18,10 @@
         tools:layout="@layout/fragment_list" />
 
     <fragment
-        android:id="@+id/navigation_places"
-        android:name="com.nullpointerexception.cityeye.ui.fragments.PlacesFragment"
-        android:label="fragment_places"
-        tools:layout="@layout/fragment_places" />
+        android:id="@+id/navigation_leaderboard"
+        android:name="com.nullpointerexception.cityeye.ui.fragments.LeaderboardFragment"
+        android:label="@string/leaderboard"
+        tools:layout="@layout/fragment_leaderboard" />
 
     <fragment
         android:id="@+id/navigation_events"

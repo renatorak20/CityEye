@@ -22,6 +22,7 @@ import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.entities.Event
 import com.nullpointerexception.cityeye.entities.MapItem
 import com.nullpointerexception.cityeye.entities.SupportedCities
+import com.nullpointerexception.cityeye.entities.User
 import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
 import com.nullpointerexception.cityeye.util.LocationUtil
 import kotlinx.coroutines.Dispatchers
@@ -245,5 +246,20 @@ class SharedViewModel : ViewModel() {
 
     var areItemsLoaded = false
 
+
+    private val _users = MutableLiveData<List<User>>()
+    fun setUsers(items: List<User>) {
+        _users.value = items
+    }
+
+    fun getUsers(): MutableLiveData<List<User>> {
+        return _users
+    }
+
+    fun getAllUsers() {
+        viewModelScope.launch {
+            setUsers(FirebaseDatabase.getAllUsers()!!)
+        }
+    }
 
 }

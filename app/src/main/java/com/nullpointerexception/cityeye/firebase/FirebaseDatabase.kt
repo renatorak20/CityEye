@@ -484,7 +484,7 @@ object FirebaseDatabase {
         docRef.update("displayName", "User$shuffledNumber")
     }
 
-    suspend fun sendMessage(problemID: String, text: String, user: FirebaseUser) {
+    fun sendMessage(problemID: String, text: String, user: FirebaseUser) {
         val ref = Firebase.firestore.collection("messages").document(problemID)
             .collection("problemMessages")
 
@@ -497,7 +497,31 @@ object FirebaseDatabase {
                 Instant.now().epochSecond.toInt()
             )
         )
-
     }
+
+    suspend fun getAllUsers(): ArrayList<User>? = suspendCoroutine { continuation ->
+        val docRef = Firebase.firestore.collection("users")
+        docRef.get()
+            .addOnSuccessListener { document ->
+                val documents = document.documents
+                if (documents.size == 0) {
+                    continuation.resume(null)
+                } else {
+                    var array = arrayListOf<User>()
+                    for (document in documents) {
+                        val user = document.toObject(User::class.java)
+                        if (user != null) {
+                            array.add(user)
+                        }
+                    }
+                    continuation.resume(array)
+
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "Error getting documents: ", exception)
+            }
+    }
+
 
 }

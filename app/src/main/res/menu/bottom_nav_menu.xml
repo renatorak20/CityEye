@@ -14,9 +14,9 @@
         android:title="@string/reports" />
 
     <item
-        android:id="@+id/navigation_places"
-        android:icon="@drawable/ic_places"
-        android:title="@string/places" />
+        android:id="@+id/navigation_leaderboard"
+        android:icon="@drawable/ic_leaderboard"
+        android:title="@string/leaderboard" />
 
     <item
         android:id="@+id/navigation_events"

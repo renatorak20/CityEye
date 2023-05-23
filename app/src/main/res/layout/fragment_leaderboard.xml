@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.fragments.LeaderboardFragment">
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pullToRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/rounded_bckgr_profile"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:id="@+id/secondPlace"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/second_place_frame"
+                    android:src="@drawable/userimage"
+                    app:layout_constraintEnd_toStartOf="@+id/firstPlace"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <FrameLayout
+                    android:id="@+id/firstPlace"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/firstPlaceImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/first_place_frame"
+                        android:src="@drawable/userimage" />
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/animationFirst"
+                        android:layout_marginTop="80dp"
+                        android:layout_marginStart="80dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        app:lottie_rawRes="@raw/anim_crown" />
+
+                </FrameLayout>
+
+
+                <ImageView
+                    android:id="@+id/thirdPlace"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginTop="40dp"
+                    android:background="@drawable/third_place_frame"
+                    android:src="@drawable/userimage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/firstPlace"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/secondName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="@+id/secondPlace"
+                    app:layout_constraintStart_toStartOf="@+id/secondPlace"
+                    app:layout_constraintTop_toBottomOf="@+id/secondPlace"
+                    tools:text="Renato" />
+
+                <TextView
+                    android:id="@+id/secondPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="@+id/secondPlace"
+                    app:layout_constraintStart_toStartOf="@+id/secondPlace"
+                    app:layout_constraintTop_toBottomOf="@+id/secondName"
+                    tools:text="1200pts" />
+
+                <TextView
+                    android:id="@+id/firstName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="@+id/firstPlace"
+                    app:layout_constraintStart_toStartOf="@+id/firstPlace"
+                    app:layout_constraintTop_toBottomOf="@+id/firstPlace"
+                    tools:text="Renato" />
+
+                <TextView
+                    android:id="@+id/firstPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="@+id/firstPlace"
+                    app:layout_constraintStart_toStartOf="@+id/firstPlace"
+                    app:layout_constraintTop_toBottomOf="@+id/firstName"
+                    tools:text="1200pts" />
+
+                <TextView
+                    android:id="@+id/thirdName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="@+id/thirdPlace"
+                    app:layout_constraintStart_toStartOf="@+id/thirdPlace"
+                    app:layout_constraintTop_toBottomOf="@+id/thirdPlace"
+                    tools:text="Renato" />
+
+                <TextView
+                    android:id="@+id/thirdPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="@+id/thirdPlace"
+                    app:layout_constraintStart_toStartOf="@+id/thirdPlace"
+                    app:layout_constraintTop_toBottomOf="@+id/thirdName"
+                    tools:text="1200pts" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</FrameLayout>

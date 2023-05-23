@@ -42,6 +42,8 @@ android {
 
 dependencies {
 
+    implementation 'com.github.ibrahimsn98:SmoothBottomBar:1.7.9'
+
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
     implementation 'androidx.palette:palette:1.0.0'

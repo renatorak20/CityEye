@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_capture,
                 R.id.navigation_list,
                 R.id.navigation_events,
-                R.id.navigation_places
+                R.id.navigation_leaderboard
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
