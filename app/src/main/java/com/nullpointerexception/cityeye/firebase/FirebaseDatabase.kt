@@ -103,6 +103,7 @@ object FirebaseDatabase {
                             context.resources.getString(R.string.problemUploaded),
                             Toast.LENGTH_SHORT
                         ).show()
+
                         FirebaseDatabase.getInstance().reference.child("messages")
                             .setValue(problemID)
                             .addOnSuccessListener {
@@ -202,7 +203,9 @@ object FirebaseDatabase {
                 provider,
                 token,
                 listOf(),
-                listOf()
+                listOf(),
+                null,
+                null
             )
 
             if (NetworkUtil.isNetworkAvailable(context)) {

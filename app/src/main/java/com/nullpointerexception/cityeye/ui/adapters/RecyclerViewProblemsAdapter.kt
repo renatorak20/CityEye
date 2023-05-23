@@ -77,16 +77,14 @@ class RecyclerViewProblemsAdapter(
         holder.binding.layout.animation =
             AnimationUtils.loadAnimation(context, R.anim.recycler_problem_animation)
 
-
-
-        holder.binding.details.setOnClickListener {
-            startProfileActivity(model.problemID!!)
+        holder.binding.layout.setOnClickListener {
+            startProblemActivity(model.problemID!!)
         }
 
     }
 
 
-    fun startProfileActivity(problemID: String) {
+    fun startProblemActivity(problemID: String) {
         val intent = Intent(activity, ProblemDetailActivity::class.java)
         intent.putExtra("problemID", problemID)
         activity.startActivity(intent)

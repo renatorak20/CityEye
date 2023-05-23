@@ -53,7 +53,7 @@ class RecyclerViewProfileAdapter(val context: Context, val problems: ArrayList<P
             Coil.imageLoader(context).enqueue(request)
         }
 
-        holder.binding.details.setOnClickListener {
+        holder.binding.layout.setOnClickListener {
             val intent = Intent(context, ProblemDetailActivity::class.java)
             intent.putExtra("problemID", problem.problemID!!)
             context.startActivity(intent)

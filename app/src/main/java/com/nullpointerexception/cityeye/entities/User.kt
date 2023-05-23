@@ -9,5 +9,7 @@ data class User(
     val provider: String? = null,
     val fcmToken: String? = null,
     val problems: List<String>? = listOf(),
-    val notifications: List<String>? = listOf()
+    val notifications: List<String>? = listOf(),
+    val points: Int? = null,
+    val isCitizenOfTheMonth: Boolean? = null
 )

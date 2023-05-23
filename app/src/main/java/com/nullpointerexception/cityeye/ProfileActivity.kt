@@ -1,6 +1,7 @@
 package com.nullpointerexception.cityeye
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,16 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.getProblems().observe(this) {
             setProblems()
             binding.content.problems.pullToRefresh.isRefreshing = false
+
+            if (it.isNotEmpty()) {
+                binding.content.header.firstReport.alpha = 1f
+            }
+            if (it.size > 9) {
+                binding.content.header.tenReport.alpha = 1f
+            }
+            if (it.size > 99) {
+                binding.content.header.onehReport.alpha = 1f
+            }
         }
 
         viewModel.getCurrentUser(Firebase.auth.currentUser!!.uid)
@@ -47,6 +58,23 @@ class ProfileActivity : AppCompatActivity() {
         binding.content.problems.pullToRefresh.setOnRefreshListener {
             viewModel.getUserProblems(viewModel.getUser().value!!.problems!!)
         }
+
+        binding.content.header.firstReport.setOnClickListener {
+            Toast.makeText(this, getString(R.string.firstReport), Toast.LENGTH_SHORT).show()
+        }
+
+        binding.content.header.tenReport.setOnClickListener {
+            Toast.makeText(this, getString(R.string.tenthReport), Toast.LENGTH_SHORT).show()
+        }
+
+        binding.content.header.onehReport.setOnClickListener {
+            Toast.makeText(this, getString(R.string.onehReport), Toast.LENGTH_SHORT).show()
+        }
+
+        binding.content.header.citizenOfTheMonth.setOnClickListener {
+            Toast.makeText(this, getString(R.string.citizenOfTheMonth), Toast.LENGTH_SHORT).show()
+        }
+
 
     }
 
@@ -67,8 +95,6 @@ class ProfileActivity : AppCompatActivity() {
 
     fun setInfo() {
         binding.content.header.username.text = viewModel.user.value!!.displayName ?: "User471659"
-        binding.content.header.problemNumber.text =
-            getString(R.string.profileNoProblems, viewModel.user.value!!.problems!!.size)
         binding.content.header.city.text = "Zagreb"
     }
 

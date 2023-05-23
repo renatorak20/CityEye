@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        drawable="@drawable/ic_map"
+        text="@string/map" />
+
+    <tab
+        drawable="@drawable/ic_problem"
+        text="@string/reports" />
+
+    <tab
+        drawable="@drawable/ic_leaderboard"
+        text="@string/leaderboard" />
+
+    <tab
+        drawable="@drawable/ic_event"
+        text="@string/events" />
+
+</tabs>

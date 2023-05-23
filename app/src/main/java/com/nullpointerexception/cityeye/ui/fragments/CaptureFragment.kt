@@ -152,7 +152,7 @@ class CaptureFragment : Fragment() {
         if (Firebase.auth.currentUser == null) {
             startActivity(Intent(requireContext(), LoginActivity::class.java))
         }
-
+        viewModel.getMyFusedLocationNow(requireActivity())
         viewModel.getlatestSupportedCities()
 
         viewModel.getMyCoordinates().observe(viewLifecycleOwner) {
@@ -189,7 +189,7 @@ class CaptureFragment : Fragment() {
 
         binding.indicator.show()
 
-        viewModel.getMyFusedLocationNow(requireActivity())
+
 
         binding.capture.setOnClickListener {
             if (PermissionUtils.requestPermission(requireActivity())) {

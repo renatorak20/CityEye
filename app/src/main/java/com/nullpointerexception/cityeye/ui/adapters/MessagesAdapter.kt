@@ -14,6 +14,8 @@ import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.databinding.MessageBinding
 import com.nullpointerexception.cityeye.databinding.MessageMeBinding
 import com.nullpointerexception.cityeye.entities.Message
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 const val USER = 0
@@ -56,7 +58,7 @@ class MessagesAdapter(
         fun bind(message: Message) {
             with(binding) {
 
-                messengerTextView.text = "City admin"
+                messengerTextView.text = "City admin, ${getFullTime(message.time!!)}"
                 messengerImageView.setImageDrawable(context.getDrawable(R.drawable.userimage))
                 messageTextView.text = message.text
 
@@ -70,7 +72,7 @@ class MessagesAdapter(
         fun bind(message: Message) {
             with(binding) {
                 messageTextView.text = message.text
-                messengerTextView.text = "Me"
+                messengerTextView.text = "Me, ${getFullTime(message.time!!)}"
                 Glide.with(context).load(currentUser?.photoUrl).transform(CircleCrop())
                     .into(binding.messengerImageView)
             }
@@ -84,7 +86,13 @@ class MessagesAdapter(
             is MessageViewHolder -> holder.bind(getItem(position))
             is MessageMeViewHolder -> holder.bind(getItem(position))
         }
+    }
 
+    fun getFullTime(epoch: Int): String {
+        val date = Date(epoch * 1000L)
 
+        val dateFormat = SimpleDateFormat("HH:mm dd.MM.yyyy")
+        val formattedDateTime = dateFormat.format(date)
+        return formattedDateTime
     }
 }
