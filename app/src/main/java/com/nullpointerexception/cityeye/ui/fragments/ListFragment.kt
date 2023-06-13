@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.nullpointerexception.cityeye.data.ProblemPreviewViewModel
+import com.nullpointerexception.cityeye.data.SharedViewModel
 import com.nullpointerexception.cityeye.databinding.FragmentListBinding
 import com.nullpointerexception.cityeye.entities.Problem
 import com.nullpointerexception.cityeye.ui.adapters.RecyclerViewProblemsAdapter
@@ -19,7 +19,7 @@ import com.nullpointerexception.cityeye.ui.adapters.RecyclerViewProblemsAdapter
 class ListFragment : Fragment() {
 
     private lateinit var binding: FragmentListBinding
-    private lateinit var viewModel: ProblemPreviewViewModel
+    private lateinit var viewModel: SharedViewModel
     private lateinit var adapter: RecyclerViewProblemsAdapter
 
     override fun onCreateView(
@@ -29,7 +29,7 @@ class ListFragment : Fragment() {
 
         binding = FragmentListBinding.inflate(inflater, container, false)
 
-        viewModel = ViewModelProvider(requireActivity())[ProblemPreviewViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
         val query = FirebaseFirestore.getInstance().collection("problems")
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -43,10 +43,6 @@ class ListFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.itemAnimator = null
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onStart() {

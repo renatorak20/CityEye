@@ -79,7 +79,9 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.loginButton.setOnClickListener {
-            if (binding.emailField.isNotEmpty() && binding.passwordField.isNotEmpty()) {
+            if (binding.emailField.getText().isNotEmpty() && binding.passwordField.getText()
+                    .isNotEmpty()
+            ) {
                 SessionUtil(this).signInWithMail(
                     this,
                     binding.root,

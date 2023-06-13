@@ -21,8 +21,8 @@ class ProblemPreviewViewModel : ViewModel() {
     val image: LiveData<File>
         get() = _image
 
-    private val _address = MutableLiveData<String>()
-    val address: LiveData<String>
+    private val _address = MutableLiveData<String?>()
+    val address: MutableLiveData<String?>
         get() = _address
 
     fun setCoordinates(latLng: LatLng?) {
@@ -51,7 +51,8 @@ class ProblemPreviewViewModel : ViewModel() {
         description: String,
         savedImageFile: File,
         location: LatLng,
-        address: String
+        address: String,
+        category: String
     ) {
         viewModelScope.launch {
             val response = FirebaseDatabase.addNormalProblem(
@@ -60,7 +61,8 @@ class ProblemPreviewViewModel : ViewModel() {
                 description,
                 savedImageFile,
                 location,
-                address
+                address,
+                category
             )
             setResponse(response)
         }

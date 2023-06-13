@@ -17,7 +17,8 @@ data class Problem(
     val epoch: Int? = null,
     val answerID: String? = null,
     val solved: Boolean? = null,
-    val timestamp: Timestamp? = null
+    val timestamp: Timestamp? = null,
+    val category: String? = null
 ) {
 
     override fun toString(): String {

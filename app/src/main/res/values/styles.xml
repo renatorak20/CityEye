@@ -6,4 +6,8 @@
         <item name="cornerSize">50%</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
+
+    <style name="login_button">
+        <item name="android:background">@drawable/back_slide1</item>
+    </style>
 </resources>

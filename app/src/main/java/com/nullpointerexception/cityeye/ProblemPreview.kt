@@ -3,12 +3,14 @@ package com.nullpointerexception.cityeye
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 import com.nullpointerexception.cityeye.data.ProblemPreviewViewModel
 import com.nullpointerexception.cityeye.databinding.ActivityProblemPreviewBinding
@@ -49,9 +51,23 @@ class ProblemPreview : AppCompatActivity() {
 
         setProblemImage()
 
+        (binding.selector as? MaterialAutoCompleteTextView)?.setAdapter(
+            ArrayAdapter(
+                this, R.layout.spinner_item, arrayOf(
+                    getString(R.string.traffic),
+                    getString(R.string.junk),
+                    getString(R.string.damaged_items),
+                    getString(R.string.other)
+                )
+            )
+        )
+
+        (binding.selector as? MaterialAutoCompleteTextView)?.setText(
+            getString(R.string.traffic),
+            false
+        )
 
         binding.fab.setOnClickListener {
-
 
             if (!binding.problemTitleEditText.checkIfCharactersExceed(50) && !binding.problemDescriptionEditText.checkIfCharactersExceed(
                     200
@@ -66,7 +82,8 @@ class ProblemPreview : AppCompatActivity() {
                         binding.problemDescriptionEditText.text(),
                         viewModel.image.value!!,
                         viewModel.coordinates.value!!,
-                        viewModel.address.value!!
+                        viewModel.address.value!!,
+                        binding.spinner.text()
                     )
                     binding.loadIndicator.show()
                     binding.fab.isEnabled = false

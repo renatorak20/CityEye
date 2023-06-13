@@ -26,6 +26,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             app:labelVisibilityMode="selected"
+            android:background="@drawable/rounded_bckgr_bottom_nav_bar"
             app:menu="@menu/bottom_nav_menu" />
 
         <fragment

@@ -20,7 +20,7 @@
 
     <string name="profile_dropdown_profile">Profile</string>
     <string name="welcome">Welcome</string>
-    <string name="login">Login</string>
+    <string name="login">Log In</string>
     <string name="email">E-mail</string>
     <string name="password">Password</string>
     <string name="forgotPassword">Forgot password?</string>
@@ -97,5 +97,11 @@
     <string name="tenthReport">Achievement: 10th report</string>
     <string name="onehReport">Achievement: 100th report</string>
     <string name="citizenOfTheMonth">Achievement: Citizen of the month</string>
+
+    <string name="category">Category</string>
+    <string name="damaged_items">Damaged item</string>
+    <string name="traffic">Traffic</string>
+    <string name="junk">Junk</string>
+    <string name="other">Other</string>
 
 </resources>

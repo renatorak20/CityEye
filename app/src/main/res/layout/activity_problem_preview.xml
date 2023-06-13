@@ -48,7 +48,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/back"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,6 +59,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Problem preview"
+                android:textSize="28sp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintBottom_toTopOf="@+id/problemImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <ImageView
                 android:id="@+id/problemImage"
@@ -97,8 +107,7 @@
                 android:id="@+id/problemDescriptionEditText"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="350dp"
                 android:maxHeight="200dp"
                 android:hint="@string/problemPreviewDescription"
                 app:counterEnabled="true"
@@ -115,24 +124,45 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/spinner"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:hint="Category"
+                android:layout_marginStart="48dp"
+                android:layout_marginEnd="48dp"
+                app:layout_constraintEnd_toEndOf="@id/problemDescriptionEditText"
+                app:layout_constraintStart_toStartOf="@id/problemDescriptionEditText"
+                app:layout_constraintTop_toBottomOf="@id/problemDescriptionEditText">
+
+                <AutoCompleteTextView
+                    android:id="@+id/selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:id="@+id/addressTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="68dp"
+                android:layout_marginTop="40dp"
                 android:text="@string/problemPreviewAddress"
                 app:layout_constraintEnd_toStartOf="@+id/address"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/problemDescriptionEditText" />
+                app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
             <TextView
                 android:id="@+id/address"
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="204dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/problemDescriptionEditText"
+                app:layout_constraintTop_toBottomOf="@+id/spinner"
                 tools:text="TestTestTestTestTestTestTestTestTestTestTestTestTestTest" />
 
             <Button

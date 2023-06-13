@@ -36,9 +36,9 @@
         android:layout_height="wrap_content"
         android:lines="1"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="50dp"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/details"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.001"
         app:layout_constraintStart_toStartOf="@+id/date"
         app:layout_constraintTop_toTopOf="parent"
@@ -84,23 +84,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
         android:src="@drawable/ic_location"
         app:layout_constraintStart_toEndOf="@id/address"
-        app:layout_constraintTop_toBottomOf="@+id/date"
+        app:layout_constraintTop_toTopOf="@+id/address"
         app:tint="?attr/colorBlack" />
-
-    <ImageView
-        android:id="@+id/details"
-        android:layout_width="50dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorBlack" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

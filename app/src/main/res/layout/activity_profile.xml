@@ -24,7 +24,7 @@
                 android:src="@drawable/ic_arrow_back"
                 android:layout_height="30dp"
                 android:layout_width="30dp"
-                app:tint="?attr/colorWhite" />
+                app:tint="@color/white" />
 
         </androidx.appcompat.widget.Toolbar>
 

@@ -44,7 +44,8 @@ object FirebaseDatabase {
         description: String,
         savedImageFile: File,
         location: LatLng,
-        address: String
+        address: String,
+        category: String
     ): Boolean {
 
         val database = Firebase.firestore
@@ -68,7 +69,8 @@ object FirebaseDatabase {
             (System.currentTimeMillis() / 1000).toInt(),
             null,
             false,
-            Timestamp.now()
+            Timestamp.now(),
+            category
         )
 
 
@@ -460,11 +462,12 @@ object FirebaseDatabase {
                 if (documents.size == 0) {
                     continuation.resume(null)
                 } else {
+                    var problem: Answer? = null
                     for (document in documents) {
-                        val problem = document.toObject(Answer::class.java)
-                        if (problem != null) {
-                            continuation.resume(problem)
-                        }
+                        problem = document.toObject(Answer::class.java)
+                    }
+                    if (problem != null) {
+                        continuation.resume(problem)
                     }
                 }
             }

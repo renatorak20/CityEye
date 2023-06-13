@@ -123,13 +123,8 @@ class ProblemDetailActivity : AppCompatActivity() {
         binding.sendButton.setOnClickListener {
             val text = binding.messageEditText.text.toString().trim()
             if (text.isNotEmpty() && text.length > 10) {
-                if (chatAdapter.itemCount > 1 && chatAdapter.getItem(1).name != Firebase.auth.currentUser?.displayName) {
-                    viewModel.sendMessage(text)
-                    binding.messageEditText.setText("")
-                } else {
-                    Toast.makeText(this, "Please wait for respond first!", Toast.LENGTH_SHORT)
-                        .show()
-                }
+                viewModel.sendMessage(text)
+                binding.messageEditText.setText("")
             } else {
                 Toast.makeText(this, "Please enter more than 10 characters!", Toast.LENGTH_SHORT)
                     .show()

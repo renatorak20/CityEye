@@ -129,7 +129,6 @@ class CaptureFragment : Fragment() {
     }
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -185,11 +184,11 @@ class CaptureFragment : Fragment() {
         }
 
         viewModel.loadProblemCoordinates()
-        setUpLocationListener(this.activity as AppCompatActivity)
+        viewModel.getMyFusedLocationNow(requireActivity())
+
+
 
         binding.indicator.show()
-
-
 
         binding.capture.setOnClickListener {
             if (PermissionUtils.requestPermission(requireActivity())) {
@@ -207,11 +206,13 @@ class CaptureFragment : Fragment() {
                     PermissionUtils.isLocationEnabled(this.activity as AppCompatActivity) -> {
                         setUpLocationListener(this.activity as AppCompatActivity)
                     }
+
                     else -> {
                         PermissionUtils.showGPSNotEnabledDialog(this.activity as AppCompatActivity)
                     }
                 }
             }
+
             else -> {
                 PermissionUtils.requestAccessFineLocationPermission(
                     this.activity as AppCompatActivity,
@@ -305,7 +306,7 @@ class CaptureFragment : Fragment() {
                     }
                 }
             },
-            Looper.myLooper()
+            Looper.getMainLooper()
         )
     }
 
