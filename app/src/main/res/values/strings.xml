@@ -11,6 +11,7 @@
 
     <string name="client_ID">626523382367-a81bjbmmo0n2mrm614629stpfgc2mj4m.apps.googleusercontent.com</string>
     <string name="maps_key">AIzaSyCUY11RGhx0bJVxMRphkwgtBbxobSDtDTo</string>
+    <string name="maps_key_demo">myKey</string>
 
     <string name="dialog_permission_request_title">Permissions</string>
     <string name="dialog_permission_request_support">Please open app settings and grant camera and location permissions.
@@ -24,6 +25,8 @@
     <string name="email">E-mail</string>
     <string name="password">Password</string>
     <string name="forgotPassword">Forgot password?</string>
+    <string name="passwordResetSent">Email for resetting your password has been sent!</string>
+    <string name="emailRequired">Please enter your email!</string>
     <string name="google">Google</string>
     <string name="or">or</string>
 

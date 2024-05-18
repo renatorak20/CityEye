@@ -20,7 +20,8 @@
         app:lottie_autoPlay="false"
         app:lottie_loop="false"
         app:lottie_rawRes="@raw/anim_done"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:lottie_enableMergePathsForKitKatAndAbove="true" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationError"
@@ -34,7 +35,8 @@
         app:lottie_autoPlay="false"
         app:lottie_loop="false"
         app:lottie_rawRes="@raw/anim_error"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:lottie_enableMergePathsForKitKatAndAbove="true" />
 
     <ImageView
         android:id="@+id/back"
@@ -145,6 +147,29 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/spinnerEvent"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:hint="Event"
+                android:visibility="gone"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="48dp"
+                android:layout_marginEnd="48dp"
+                app:layout_constraintEnd_toEndOf="@id/spinner"
+                app:layout_constraintStart_toStartOf="@id/spinner"
+                app:layout_constraintTop_toBottomOf="@id/spinner">
+
+                <AutoCompleteTextView
+                    android:id="@+id/selectorEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:id="@+id/addressTextView"
                 android:layout_width="wrap_content"
@@ -153,7 +178,7 @@
                 android:text="@string/problemPreviewAddress"
                 app:layout_constraintEnd_toStartOf="@+id/address"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner" />
+                app:layout_constraintTop_toBottomOf="@+id/spinnerEvent" />
 
             <TextView
                 android:id="@+id/address"
@@ -162,7 +187,7 @@
                 android:layout_marginStart="204dp"
                 android:layout_marginTop="20dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner"
+                app:layout_constraintTop_toBottomOf="@+id/spinnerEvent"
                 tools:text="TestTestTestTestTestTestTestTestTestTestTestTestTestTest" />
 
             <Button

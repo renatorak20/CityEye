@@ -80,7 +80,6 @@ class RecyclerViewProblemsAdapter(
         holder.binding.layout.setOnClickListener {
             startProblemActivity(model.problemID!!)
         }
-
     }
 
 

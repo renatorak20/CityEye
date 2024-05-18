@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.badge.BadgeDrawable
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.nullpointerexception.cityeye.entities.User
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel : ViewModel() {
+
+    private val firebaseRepository = FirebaseRepository()
 
     private val _messagesCount = MutableLiveData<Int>()
     var messagesCount: LiveData<Int> = _messagesCount
@@ -38,37 +39,8 @@ class MainActivityViewModel : ViewModel() {
 
     fun getUserFromDb() {
         viewModelScope.launch {
-            val response = FirebaseDatabase.getUser(Firebase.auth.currentUser!!.uid)
+            val response = firebaseRepository.getUser(Firebase.auth.currentUser!!.uid)
             response?.let { setUser(it) }
-        }
-    }
-
-    fun getLiveMessagesCount() {
-        viewModelScope.launch {
-            val response = FirebaseDatabase.getUserNotifications(_user.value!!.notifications!!)
-            setMessagesCount(response.count { !it.isRead!! })
-        }
-    }
-
-
-    fun startListeningForNotifications() {
-        viewModelScope.launch {
-            val usersCollection = FirebaseFirestore.getInstance().collection("users")
-
-            val userDocument = usersCollection.document(Firebase.auth.currentUser?.uid!!)
-
-            userDocument.addSnapshotListener { snapshot, e ->
-                if (snapshot != null && snapshot.exists()) {
-                    val notifications = snapshot.get("notifications") as? ArrayList<String>
-                    if (!_user.value?.notifications.isNullOrEmpty()) {
-                        if (!notifications?.equals(_user.value?.notifications)!!) {
-                            getUserFromDb()
-                            getLiveMessagesCount()
-                        }
-                    }
-
-                }
-            }
         }
     }
 

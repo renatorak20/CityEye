@@ -20,7 +20,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.databinding.FragmentIntroLoginBinding
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import com.nullpointerexception.cityeye.util.SessionUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +36,8 @@ class IntroLoginFragment : Fragment() {
     private val REQ_ONE_TAP = 2
 
     private lateinit var auth: FirebaseAuth
+
+    private val firebaseRepository: FirebaseRepository = FirebaseRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,10 +105,10 @@ class IntroLoginFragment : Fragment() {
                         .addOnCompleteListener(requireActivity()) { task ->
                             if (task.isSuccessful) {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    if (!FirebaseDatabase.isDuplicateUser(Firebase.auth.currentUser!!.uid)) {
-                                        FirebaseDatabase.addNewUser(requireContext(), "google")
+                                    if (!firebaseRepository.isDuplicateUser(Firebase.auth.currentUser!!.uid)) {
+                                        firebaseRepository.addNewUser(requireContext())
                                     }
-                                    FirebaseDatabase.updateFCMToken(requireContext())
+                                    firebaseRepository.updateFCMToken(requireContext())
                                 }
                                 SessionUtil(requireActivity()).proceedToMainScreen()
                             } else {

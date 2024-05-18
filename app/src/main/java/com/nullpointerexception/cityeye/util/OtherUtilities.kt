@@ -37,8 +37,8 @@ class OtherUtilities {
         return dateFormat.format(date)
     }
 
-    fun getDateFromEpoch(epoch: Int): String {
-        val date = Date(epoch.toLong() * 1000)
+    fun getDateFromEpoch(epoch: Long): String {
+        val date = Date(epoch * 1000)
         val dateFormat = SimpleDateFormat("dd/MM/yyyy")
         return dateFormat.format(date)
     }

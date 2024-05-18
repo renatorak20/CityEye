@@ -6,9 +6,9 @@ import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isNotEmpty
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -18,7 +18,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nullpointerexception.cityeye.databinding.ActivityLoginBinding
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import com.nullpointerexception.cityeye.util.SessionUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
     private val REQ_ONE_TAP = 2
 
     private lateinit var auth: FirebaseAuth
+    private val firebaseRepository = FirebaseRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +92,21 @@ class LoginActivity : AppCompatActivity() {
                 )
             }
         }
+
+        binding.forgotPassword.setOnClickListener {
+            if (binding.emailField.getText().isNotEmpty()) {
+                FirebaseAuth.getInstance().sendPasswordResetEmail(binding.emailField.getText())
+                    .addOnCompleteListener {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.passwordResetSent),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            } else {
+                Toast.makeText(this, getString(R.string.emailRequired), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -107,10 +123,10 @@ class LoginActivity : AppCompatActivity() {
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    if (!FirebaseDatabase.isDuplicateUser(Firebase.auth.currentUser!!.uid)) {
-                                        FirebaseDatabase.addNewUser(applicationContext, "google")
+                                    if (!firebaseRepository.isDuplicateUser(Firebase.auth.currentUser!!.uid)) {
+                                        firebaseRepository.addNewUser(applicationContext)
                                     }
-                                    FirebaseDatabase.updateFCMToken(applicationContext)
+                                    firebaseRepository.updateFCMToken(applicationContext)
                                 }
                                 SessionUtil(this).proceedToMainScreen()
                             } else {

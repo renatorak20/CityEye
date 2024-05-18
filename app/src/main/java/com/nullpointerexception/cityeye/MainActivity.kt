@@ -1,6 +1,5 @@
 package com.nullpointerexception.cityeye
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -25,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainActivityViewModel
 
-    @SuppressLint("UnsafeOptInUsageError")
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -33,9 +31,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (Firebase.auth.currentUser == null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
+        checkIfUserIsLoggedIn()
 
         PermissionUtils.createNotificationChannel(this)
 
@@ -48,26 +44,27 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.navigation_capture,
                 R.id.navigation_list,
+                //R.id.navigation_leaderboard,
+                R.id.navigation_places,
                 R.id.navigation_events,
-                R.id.navigation_leaderboard
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
 
-        Firebase.auth.currentUser?.let { ToolbarManager(binding.mainToolbar, it, this) }
+        ToolbarManager(binding.mainToolbar, Firebase.auth.currentUser!!, this)
 
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
+
     override fun onStart() {
         super.onStart()
 
-        viewModel.getUserFromDb()
+        //viewModel.getUserFromDb()
 
         viewModel.getUser().observe(this) {
-            viewModel.getLiveMessagesCount()
-            viewModel.startListeningForNotifications()
+            //viewModel.getLiveMessagesCount()
+            //viewModel.startListeningForNotifications()
         }
 
         viewModel.getMessagesCount().observe(this) {
@@ -78,13 +75,18 @@ class MainActivity : AppCompatActivity() {
                     viewModel.badge!!,
                     binding.mainToolbar.notificationsIcon
                 )
-                binding.mainToolbar.notificationsIcon.visibility = View.VISIBLE
+                //binding.mainToolbar.notificationsIcon.visibility = View.VISIBLE
                 binding.mainToolbar.notificationsIconEmpty.visibility = View.GONE
             } else {
                 binding.mainToolbar.notificationsIcon.visibility = View.GONE
-                binding.mainToolbar.notificationsIconEmpty.visibility = View.VISIBLE
+                //binding.mainToolbar.notificationsIconEmpty.visibility = View.VISIBLE
             }
         }
+    }
 
+    private fun checkIfUserIsLoggedIn() {
+        if (Firebase.auth.currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
 }

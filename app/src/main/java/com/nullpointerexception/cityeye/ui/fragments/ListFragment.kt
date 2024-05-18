@@ -32,7 +32,7 @@ class ListFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
         val query = FirebaseFirestore.getInstance().collection("problems")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .orderBy("epoch", Query.Direction.DESCENDING)
         val options: FirestoreRecyclerOptions<Problem> = FirestoreRecyclerOptions.Builder<Problem>()
             .setQuery(query, Problem::class.java)
             .build()

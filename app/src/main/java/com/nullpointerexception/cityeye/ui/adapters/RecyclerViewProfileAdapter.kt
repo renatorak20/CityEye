@@ -37,7 +37,7 @@ class RecyclerViewProfileAdapter(val context: Context, val problems: ArrayList<P
         holder.binding.loadIndicator.show()
         binding.title.text = problem.title
         binding.address.text = problem.address
-        binding.date.text = OtherUtilities().getDateFromEpoch(problem.epoch!!)
+        binding.date.text = problem.epoch?.let { OtherUtilities().getDateFromEpoch(it) }
 
         Firebase.storage.reference.child("images/${problem.imageName}").downloadUrl.addOnSuccessListener { url ->
             holder.binding.image.load(url)

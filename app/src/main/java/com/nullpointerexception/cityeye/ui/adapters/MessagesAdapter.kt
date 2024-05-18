@@ -14,6 +14,7 @@ import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.databinding.MessageBinding
 import com.nullpointerexception.cityeye.databinding.MessageMeBinding
 import com.nullpointerexception.cityeye.entities.Message
+import com.nullpointerexception.cityeye.entities.WebUser
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -24,7 +25,8 @@ const val ADMIN = 1
 class MessagesAdapter(
     options: FirestoreRecyclerOptions<Message>,
     private val currentUser: FirebaseUser?,
-    private val context: Context
+    private val context: Context,
+    private var users: List<WebUser> = emptyList()
 ) : FirestoreRecyclerAdapter<Message, RecyclerView.ViewHolder>(options) {
 
     override fun getItemViewType(position: Int): Int {
@@ -36,15 +38,15 @@ class MessagesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        when (viewType) {
+        return when (viewType) {
             USER -> {
-                return MessageMeViewHolder(
+                MessageMeViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.message_me, parent, false)
                 )
             }
 
             else -> {
-                return MessageViewHolder(
+                MessageViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.message, parent, false)
                 )
             }
@@ -55,10 +57,17 @@ class MessagesAdapter(
     inner class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = MessageBinding.bind(itemView)
 
-        fun bind(message: Message) {
-            with(binding) {
+        fun bind(message: Message, users: List<WebUser>) {
 
-                messengerTextView.text = "City admin, ${getFullTime(message.time!!)}"
+            val userName = message.userID.let {
+                users.find { it.id == message.userID }?.name
+            }
+            with(binding) {
+                if (userName != null) {
+                    messengerTextView.text = "$userName, ${getFullTime(message.time!!)}"
+                } else {
+                    messengerTextView.text = "City Admin, ${getFullTime(message.time!!)}"
+                }
                 messengerImageView.setImageDrawable(context.getDrawable(R.drawable.userimage))
                 messageTextView.text = message.text
 
@@ -83,7 +92,7 @@ class MessagesAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Message) {
 
         when (holder) {
-            is MessageViewHolder -> holder.bind(getItem(position))
+            is MessageViewHolder -> holder.bind(getItem(position), users)
             is MessageMeViewHolder -> holder.bind(getItem(position))
         }
     }
@@ -92,7 +101,11 @@ class MessagesAdapter(
         val date = Date(epoch * 1000L)
 
         val dateFormat = SimpleDateFormat("HH:mm dd.MM.yyyy")
-        val formattedDateTime = dateFormat.format(date)
-        return formattedDateTime
+        return dateFormat.format(date)
+    }
+
+    fun updateUsers(usersList: List<WebUser>) {
+        users = usersList
+        notifyDataSetChanged()
     }
 }

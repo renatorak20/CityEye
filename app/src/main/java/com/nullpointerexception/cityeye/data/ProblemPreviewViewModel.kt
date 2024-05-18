@@ -6,12 +6,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.entities.Event
+import com.nullpointerexception.cityeye.entities.MapItem
+import com.nullpointerexception.cityeye.entities.ProblemType
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import com.nullpointerexception.cityeye.util.LocationUtil
 import kotlinx.coroutines.launch
 import java.io.File
 
 class ProblemPreviewViewModel : ViewModel() {
+
+    private val firebaseRepository: FirebaseRepository = FirebaseRepository()
 
     private val _coordinates = MutableLiveData<LatLng?>()
     val coordinates: MutableLiveData<LatLng?>
@@ -52,17 +57,20 @@ class ProblemPreviewViewModel : ViewModel() {
         savedImageFile: File,
         location: LatLng,
         address: String,
-        category: String
+        category: String,
+        eventTitle: String?,
+        markerAddress: String?
     ) {
         viewModelScope.launch {
-            val response = FirebaseDatabase.addNormalProblem(
+            val response = firebaseRepository.addNormalProblem(
                 context,
                 title,
                 description,
                 savedImageFile,
                 location,
                 address,
-                category
+                eventTitle,
+                markerAddress
             )
             setResponse(response)
         }
@@ -74,5 +82,49 @@ class ProblemPreviewViewModel : ViewModel() {
             setAddress(address)
         }
     }
+
+    fun getProblemTypes() {
+        viewModelScope.launch {
+            setProblemType(firebaseRepository.getProblemTypes())
+        }
+    }
+
+    private val _problemType = MutableLiveData<List<ProblemType>>()
+    val problemType: MutableLiveData<List<ProblemType>>
+        get() = _problemType
+
+    fun setProblemType(response: List<ProblemType>) {
+        _problemType.value = response
+    }
+
+
+    private val _events = MutableLiveData<List<Event>>()
+    val events: MutableLiveData<List<Event>>
+        get() = _events
+
+    fun setEvents(response: List<Event>) {
+        _events.value = response
+    }
+
+    fun fetchEvents() {
+        viewModelScope.launch {
+            setEvents(firebaseRepository.getEvents())
+        }
+    }
+
+    private val _markers = MutableLiveData<List<MapItem>>()
+    val markers: MutableLiveData<List<MapItem>>
+        get() = _markers
+
+    fun setMarkers(response: List<MapItem>) {
+        _markers.value = response
+    }
+
+    fun fetchMarkers() {
+        viewModelScope.launch {
+            setMarkers(firebaseRepository.getMapItems())
+        }
+    }
+
 
 }

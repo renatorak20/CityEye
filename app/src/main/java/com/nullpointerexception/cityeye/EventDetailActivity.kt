@@ -31,8 +31,6 @@ class EventDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[EventDetailViewModel::class.java]
-
-
         setSupportActionBar(findViewById(R.id.toolbar))
 
         viewModel.setEvent(intent.getSerializableExtra("event") as Event)
@@ -72,14 +70,12 @@ class EventDetailActivity : AppCompatActivity() {
                     )
                 }
 
-            binding.datetime.durationTime.text =
-                getString(
-                    R.string.event_duration,
-                    OtherUtilities().getTimeFromEpoch(viewModel.event.value!!.epochStart!!),
-                    OtherUtilities().getTimeFromEpoch(
-                        viewModel.event.value!!.epochEnd!!
+            binding.datetime.fullTimeEnd.text =
+                viewModel.event.value!!.epochEnd?.let { it1 ->
+                    OtherUtilities().epochToFormattedString(
+                        it1
                     )
-                )
+                }
 
             binding.location.locationTitle.text = viewModel.event.value!!.location
             binding.location.locationAddress.text = viewModel.event.value!!.locationAddress

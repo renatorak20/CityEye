@@ -8,10 +8,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nullpointerexception.cityeye.entities.Answer
 import com.nullpointerexception.cityeye.entities.Problem
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.entities.WebUser
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import kotlinx.coroutines.launch
 
 class ProblemDetailViewModel : ViewModel() {
+
+    private val firebaseRepository: FirebaseRepository = FirebaseRepository()
 
     private val _problem = MutableLiveData<Problem>()
     var problem: LiveData<Problem> = _problem
@@ -24,10 +27,30 @@ class ProblemDetailViewModel : ViewModel() {
         return _problem
     }
 
+    private val _allUsers = MutableLiveData<List<WebUser>>()
+    var users: LiveData<List<WebUser>> = _allUsers
+
+    fun setUsers(users: List<WebUser>) {
+        _allUsers.value = users
+    }
+
+    fun getUsers(): MutableLiveData<List<WebUser>> {
+        return _allUsers
+    }
+
+    fun fetchUsers() {
+        viewModelScope.launch {
+            val response = firebaseRepository.getAllWebUsers()
+            if (response != null) {
+                setUsers(response)
+            }
+        }
+    }
+
 
     fun getProblem(problemID: String) {
         viewModelScope.launch {
-            val problemResponse = FirebaseDatabase.getProblemById(problemID)
+            val problemResponse = firebaseRepository.getProblemById(problemID)
             if (problemResponse != null) {
                 setProblem(problemResponse)
             }
@@ -36,7 +59,7 @@ class ProblemDetailViewModel : ViewModel() {
 
     fun getAnswer(problemID: String) {
         viewModelScope.launch {
-            val answerResponse = FirebaseDatabase.getAnswerByID(problemID)
+            val answerResponse = firebaseRepository.getAnswerByID(problemID)
             if (answerResponse != null) {
                 setAnswer(answerResponse)
             } else {
@@ -57,12 +80,13 @@ class ProblemDetailViewModel : ViewModel() {
 
     fun sendMessage(text: String) {
         viewModelScope.launch {
-            FirebaseDatabase.sendMessage(
+            firebaseRepository.sendMessage(
                 getProblem().value?.problemID!!,
                 text,
                 Firebase.auth.currentUser!!
             )
         }
     }
+
 
 }

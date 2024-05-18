@@ -10,13 +10,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nullpointerexception.cityeye.MainActivity
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SessionUtil(private val activity: Activity) {
 
+    private val firebaseRepository = FirebaseRepository()
 
     fun autoCheckUser() {
         if (Firebase.auth.currentUser != null) {
@@ -64,10 +65,10 @@ class SessionUtil(private val activity: Activity) {
                             .addOnCompleteListener(activity) { task ->
                                 if (task.isSuccessful) {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        if (!FirebaseDatabase.isDuplicateUser(Firebase.auth.currentUser!!.uid)) {
-                                            FirebaseDatabase.addNewUser(context, "email")
+                                        if (!firebaseRepository.isDuplicateUser(Firebase.auth.currentUser!!.uid)) {
+                                            firebaseRepository.addNewUser(context)
                                         }
-                                        FirebaseDatabase.assignUsername(Firebase.auth.currentUser!!.uid)
+                                        firebaseRepository.assignUsername(Firebase.auth.currentUser!!.uid)
                                         proceedToMainScreen()
                                     }
                                 } else {
@@ -78,13 +79,8 @@ class SessionUtil(private val activity: Activity) {
                                     ).show()
                                 }
                             }
-
-
                     }
-
                 }
             }
-
-
     }
 }

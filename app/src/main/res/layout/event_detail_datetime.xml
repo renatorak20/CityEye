@@ -7,13 +7,14 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_margin="20dp"
         android:layout_width="35dp"
         android:layout_height="35dp"
+        android:layout_margin="20dp"
         android:src="@drawable/ic_event"
-        app:tint="?attr/colorBlack"
+        app:layout_constraintBottom_toBottomOf="@+id/fullTimeEnd"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/fullTime"
+        app:tint="?attr/colorBlack" />
 
     <TextView
         android:id="@+id/fullTime"
@@ -30,14 +31,16 @@
         tools:text="Mon, Apr 18 21:00" />
 
     <TextView
-        android:id="@+id/durationTime"
+        android:id="@+id/fullTimeEnd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/fullTime"
         app:layout_constraintStart_toStartOf="@+id/fullTime"
         app:layout_constraintTop_toBottomOf="@+id/fullTime"
-        tools:text="21:00 - 23:30" />
+        tools:text="Mon, Apr 18 21:00" />
 
     <TextView
         android:id="@+id/addToCalendar"
@@ -47,8 +50,8 @@
         android:text="@string/addToCalendar"
         android:textColor="@color/forgotPassword"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/durationTime"
-        app:layout_constraintTop_toBottomOf="@+id/durationTime"
+        app:layout_constraintStart_toStartOf="@+id/fullTimeEnd"
+        app:layout_constraintTop_toBottomOf="@+id/fullTimeEnd"
         android:foreground="?android:attr/selectableItemBackground" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

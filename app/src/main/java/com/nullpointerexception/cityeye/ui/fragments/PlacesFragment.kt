@@ -18,11 +18,6 @@ class PlacesFragment : Fragment() {
     private lateinit var binding: FragmentPlacesBinding
     private lateinit var viewModel: SharedViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,7 +34,7 @@ class PlacesFragment : Fragment() {
 
         binding.loadIndicator.show()
 
-        viewModel.getNearbyPlaces(requireActivity(), viewModel.getMyCoordinates().value, 5000)
+        viewModel.getNearbyPlaces(requireActivity(), viewModel.getMyCoordinates().value, 1000)
 
         viewModel.getPlaces().observe(viewLifecycleOwner) { places ->
             Handler(Looper.getMainLooper()).postDelayed({

@@ -17,11 +17,6 @@ class EventsFragment : Fragment() {
     private lateinit var binding: FragmentEventsBinding
     private lateinit var viewModel: SharedViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,13 +31,15 @@ class EventsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         viewModel.getAllEvents()
 
         viewModel.getEvents().observe(viewLifecycleOwner) {
             binding.pullToRefresh.isRefreshing = false
 
-            val adapter = RecyclerViewEvents(requireActivity(), requireActivity(), it)
+            val adapter = RecyclerViewEvents(
+                requireActivity(),
+                requireActivity(),
+                it.sortedByDescending { event -> event.epochStart })
 
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -52,6 +49,5 @@ class EventsFragment : Fragment() {
         binding.pullToRefresh.setOnRefreshListener {
             viewModel.getAllEvents()
         }
-
     }
 }

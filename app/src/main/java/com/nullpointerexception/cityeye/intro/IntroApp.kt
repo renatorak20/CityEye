@@ -16,7 +16,6 @@ import com.nullpointerexception.cityeye.util.SessionUtil
 class IntroApp : AppIntro() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         addSlide(AppIntroCustomLayoutFragment.newInstance(R.layout.intro_main_fragment))
         addSlide(AppIntroCustomLayoutFragment.newInstance(R.layout.first_intro_fragment))
         addSlide(AppIntroCustomLayoutFragment.newInstance(R.layout.second_intro_fragment))
@@ -27,9 +26,7 @@ class IntroApp : AppIntro() {
         isSystemBackButtonLocked = true
         isWizardMode = true
         setImmersiveMode()
-
         SessionUtil(this).autoCheckUser()
-
     }
 
     override fun onSkipPressed(currentFragment: Fragment?) {
@@ -47,5 +44,5 @@ class IntroApp : AppIntro() {
         startActivity(Intent(applicationContext, LoginActivity::class.java))
         finish()
     }
-
 }
+

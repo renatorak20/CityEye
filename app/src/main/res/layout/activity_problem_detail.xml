@@ -167,7 +167,8 @@
         android:layout_margin="30dp"
         android:layout_gravity="end|bottom"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible" />
 
     <FrameLayout
         android:id="@+id/standard_bottom_sheet"

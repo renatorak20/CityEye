@@ -22,7 +22,7 @@ import com.nullpointerexception.cityeye.util.OtherUtilities
 class RecyclerViewEvents(
     val context: Context,
     val activity: Activity,
-    val events: List<Event>
+    private val events: List<Event>
 ) :
     RecyclerView.Adapter<RecyclerViewEvents.EventViewHolder>() {
 
@@ -93,7 +93,7 @@ class RecyclerViewEvents(
         else 2
     }
 
-    fun startEventDetailActivity(event: Event) {
+    private fun startEventDetailActivity(event: Event) {
         val intent = Intent(activity, EventDetailActivity::class.java)
         intent.putExtra("event", event)
         activity.startActivity(intent)

@@ -42,7 +42,6 @@ class ToolbarManager(
                     logOut()
                     true
                 }
-
                 else -> {
                     true
                 }
@@ -61,7 +60,7 @@ class ToolbarManager(
         }
     }
 
-    fun startProfileActivity() {
+    private fun startProfileActivity() {
         val intent = Intent(activity, ProfileActivity::class.java)
         val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
             activity,
@@ -71,12 +70,12 @@ class ToolbarManager(
         activity.startActivity(intent, options.toBundle())
     }
 
-    fun startNotificationsActivity() {
+    private fun startNotificationsActivity() {
         activity.startActivity(Intent(activity, NotificationsActivity::class.java))
     }
 
 
-    fun logOut() {
+    private fun logOut() {
         Firebase.auth.signOut()
         activity.startActivity(Intent(activity.applicationContext, IntroApp::class.java))
         activity.finish()

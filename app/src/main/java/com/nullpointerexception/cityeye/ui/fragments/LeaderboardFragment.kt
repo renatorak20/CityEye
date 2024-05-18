@@ -8,13 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import coil.load
-import coil.transform.CircleCropTransformation
-import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.data.SharedViewModel
 import com.nullpointerexception.cityeye.databinding.FragmentLeaderboardBinding
-import com.nullpointerexception.cityeye.ui.adapters.RecyclerViewLeaderboard
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.Year
@@ -43,9 +38,10 @@ class LeaderboardFragment : Fragment() {
 
         viewModel.getUsers().observe(viewLifecycleOwner) {
             binding.pullToRefresh.isRefreshing = false
-
+/*
             val sortedUsers = it.sortedBy { user -> user.problems?.size }
-                .filter { user -> user.problems?.isNotEmpty()!! }.reversed()
+                .filter { user -> user.problems?.isNotEmpty()!! }
+                .filter { user -> user.displayName != null }.reversed()
 
             val adapter =
                 RecyclerViewLeaderboard(requireContext(), sortedUsers.subList(3, sortedUsers.size))
@@ -78,7 +74,7 @@ class LeaderboardFragment : Fragment() {
 
             binding.firstName.text = sortedUsers[0].displayName
             binding.firstPoints.text = "${sortedUsers[0].problems?.size!! * 100}pts"
-
+*/
         }
 
         binding.pullToRefresh.setOnRefreshListener {
@@ -96,10 +92,8 @@ class LeaderboardFragment : Fragment() {
                 val days = duration.toDays()
                 val hours = duration.minusDays(days).toHours()
                 val minutes = duration.minusDays(days).minusHours(hours).toMinutes()
-                val seconds =
-                    duration.minusDays(days).minusHours(hours).minusMinutes(minutes).seconds
 
-                val countdownText = "$days d : $hours h : $minutes m : $seconds s"
+                val countdownText = "$days d : $hours h : $minutes m"
                 binding.timeLeft.text = countdownText
             }
 

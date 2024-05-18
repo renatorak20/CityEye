@@ -155,7 +155,7 @@ class CaptureFragment : Fragment() {
         viewModel.getlatestSupportedCities()
 
         viewModel.getMyCoordinates().observe(viewLifecycleOwner) {
-            if (viewModel.getSupportedCities().value?.cities?.isNotEmpty() == true) {
+            if (viewModel.getSupportedCities().value?.isNotEmpty() == true) {
 
                 viewModel.checkIfInSupportedCity(
                     requireContext(), viewModel.myCoordinates.value!!,

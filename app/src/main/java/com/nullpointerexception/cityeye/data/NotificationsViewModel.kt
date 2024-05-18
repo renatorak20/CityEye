@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nullpointerexception.cityeye.entities.User
 import com.nullpointerexception.cityeye.entities.UserNotification
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import kotlinx.coroutines.launch
 
 class NotificationsViewModel : ViewModel() {
+
+    private val firebaseRepository = FirebaseRepository()
 
     private val _user = MutableLiveData<User>()
     var user: LiveData<User> = _user
@@ -35,22 +37,12 @@ class NotificationsViewModel : ViewModel() {
 
     fun getUserFromDatabase(uid: String) {
         viewModelScope.launch {
-            val user = FirebaseDatabase.getUser(uid)
+            val user = firebaseRepository.getUser(uid)
             if (user != null) {
                 setUser(user)
             }
         }
     }
 
-    fun getUserNotifications() {
-        viewModelScope.launch {
-            val notifications = getUser().value?.notifications?.let {
-                FirebaseDatabase.getUserNotifications(
-                    it
-                )
-            }
-            notifications?.let { setNotifications(it) }
-        }
-    }
 
 }

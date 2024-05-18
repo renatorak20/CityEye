@@ -29,7 +29,7 @@ class ProfileActivity : AppCompatActivity() {
 
         viewModel.getUser().observe(this) {
             setInfo()
-            viewModel.getUserProblems(viewModel.user.value!!.problems!!)
+            viewModel.getUserProblems()
         }
         viewModel.getProblems().observe(this) {
             setProblems()
@@ -56,7 +56,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.content.problems.pullToRefresh.setOnRefreshListener {
-            viewModel.getUserProblems(viewModel.getUser().value!!.problems!!)
+            viewModel.getUserProblems()
         }
 
         binding.content.header.firstReport.setOnClickListener {
@@ -95,14 +95,13 @@ class ProfileActivity : AppCompatActivity() {
 
     fun setInfo() {
         binding.content.header.username.text = viewModel.user.value!!.displayName ?: "User471659"
-        binding.content.header.city.text = "Zagreb"
     }
 
     fun setProblems() {
         val recyclerView = binding.content.problems.problemsRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         val problemsSorted =
-            viewModel.getProblems().value?.sortedWith(compareByDescending { it.timestamp })
+            viewModel.getProblems().value?.sortedWith(compareByDescending { it.epoch })
         recyclerView.adapter = RecyclerViewProfileAdapter(
             this,
             ArrayList(problemsSorted)

@@ -22,11 +22,14 @@ import com.nullpointerexception.cityeye.entities.Event
 import com.nullpointerexception.cityeye.entities.MapItem
 import com.nullpointerexception.cityeye.entities.Message
 import com.nullpointerexception.cityeye.entities.Problem
-import com.nullpointerexception.cityeye.entities.SupportedCities
+import com.nullpointerexception.cityeye.entities.ProblemType
+import com.nullpointerexception.cityeye.entities.SupportedCity
 import com.nullpointerexception.cityeye.entities.User
 import com.nullpointerexception.cityeye.entities.UserNotification
+import com.nullpointerexception.cityeye.entities.WebUser
 import com.nullpointerexception.cityeye.util.NetworkUtil
-import com.nullpointerexception.cityeye.util.OtherUtilities
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -35,9 +38,13 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-object FirebaseDatabase {
+class FirebaseRepository {
 
+    private val firestore = Firebase.firestore
+    private val storage = Firebase.storage
+    private val auth = Firebase.auth
 
+    /*
     suspend fun addNormalProblem(
         context: Context,
         title: String,
@@ -45,32 +52,28 @@ object FirebaseDatabase {
         savedImageFile: File,
         location: LatLng,
         address: String,
-        category: String
+        eventName: String?,
+        markerAddress: String?
     ): Boolean {
 
-        val database = Firebase.firestore
-
-        val storage = Firebase.storage
-        val firebase = Firebase.auth
-
-        val problemID = OtherUtilities().getRandomString(20)
+        val problemID = firestore.collection("problems").document()
+        val eventId = getEvents().find { it.title == eventName }?.id
+        val markerId =
+            getMapItems().find { markerAddress?.let { it1 -> it.address?.contains(it1) } == true }?.id
 
         val problem = Problem(
-            firebase.uid,
-            firebase.currentUser!!.displayName,
-            problemID,
+            problemID.id,
             title.trim(),
             description.trim(),
-            null,
-            savedImageFile.name,
+            auth.uid!!,
             address,
+            savedImageFile.name,
+            (System.currentTimeMillis() / 1000),
+            false,
             location.latitude.toString(),
             location.longitude.toString(),
-            (System.currentTimeMillis() / 1000).toInt(),
-            null,
-            false,
-            Timestamp.now(),
-            category
+            eventId,
+            markerId
         )
 
 
@@ -79,10 +82,8 @@ object FirebaseDatabase {
                 savedImageFile.name
             )
         ) {
-
             val imagesRef = storage.reference.child("images/${savedImageFile.name}")
-            val problemRef = database.collection("problems").document(problemID)
-            val userRef = database.collection("users").document(firebase.currentUser!!.uid)
+            val userRef = firestore.collection("users").document(auth.currentUser!!.uid)
 
             val uploadTask = suspendCoroutine { continuation ->
                 imagesRef.putFile(Uri.fromFile(savedImageFile))
@@ -96,9 +97,9 @@ object FirebaseDatabase {
 
             if (uploadTask) {
                 val batchResult = suspendCoroutine { continuation ->
-                    database.runBatch { batch ->
+                    firestore.runBatch { batch ->
                         batch.update(userRef, "problems", FieldValue.arrayUnion(problemID))
-                        batch.set(problemRef, problem)
+                        batch.set(problemID, problem)
                     }.addOnSuccessListener {
                         Toast.makeText(
                             context,
@@ -111,6 +112,9 @@ object FirebaseDatabase {
                             .addOnSuccessListener {
                                 continuation.resume(true)
                             }
+                            .addOnFailureListener {
+                                continuation.resume(false)
+                            }
                     }.addOnFailureListener {
                         continuation.resume(false)
                     }
@@ -119,7 +123,6 @@ object FirebaseDatabase {
                 return if (batchResult) {
                     true
                 } else {
-                    // Batch write failed
                     Toast.makeText(
                         context,
                         context.resources.getString(R.string.errorUploading),
@@ -129,7 +132,91 @@ object FirebaseDatabase {
                     false
                 }
             } else {
-                // Image upload failed
+                Toast.makeText(
+                    context,
+                    context.resources.getString(R.string.errorUploading),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return false
+            }
+        } else {
+            return false
+        }
+    }
+*/
+
+    suspend fun addNormalProblem(
+        context: Context,
+        title: String,
+        description: String,
+        savedImageFile: File,
+        location: LatLng,
+        address: String,
+        eventName: String?,
+        markerAddress: String?
+    ): Boolean {
+        val problemID = firestore.collection("problems").document()
+        val eventId = getEvents().find { it.title == eventName }?.id
+        val markerId =
+            getMapItems().find { markerAddress?.let { it1 -> it.address?.contains(it1) } == true }?.id
+
+        val problem = Problem(
+            problemID.id,
+            title.trim(),
+            description.trim(),
+            auth.uid!!,
+            address,
+            savedImageFile.name,
+            (System.currentTimeMillis() / 1000),
+            false,
+            location.latitude.toString(),
+            location.longitude.toString(),
+            eventId,
+            markerId
+        )
+
+        if (NetworkUtil.isNetworkAvailable(context) && !isDuplicateProblem(
+                context,
+                savedImageFile.name
+            )
+        ) {
+            val imagesRef = storage.reference.child("images/${savedImageFile.name}")
+            val userRef = firestore.collection("users").document(auth.currentUser!!.uid)
+
+            val uploadSuccess = retryWithExponentialBackoff {
+                imagesRef.putFile(Uri.fromFile(savedImageFile)).await()
+                true
+            }
+
+            if (uploadSuccess == true) {
+                val transactionResult = retryWithExponentialBackoff {
+                    firestore.runTransaction { transaction ->
+                        transaction.update(userRef, "problems", FieldValue.arrayUnion(problemID))
+                        transaction.set(problemID, problem)
+                    }.await()
+
+                    FirebaseDatabase.getInstance().reference.child("messages")
+                        .setValue(problemID.id).await()
+                    true
+                }
+
+                if (transactionResult == true) {
+                    Toast.makeText(
+                        context,
+                        context.resources.getString(R.string.problemUploaded),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return true
+                } else {
+                    Toast.makeText(
+                        context,
+                        context.resources.getString(R.string.errorUploading),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    removeImage(savedImageFile.name)
+                    return false
+                }
+            } else {
                 Toast.makeText(
                     context,
                     context.resources.getString(R.string.errorUploading),
@@ -142,6 +229,30 @@ object FirebaseDatabase {
         }
     }
 
+    suspend fun <T> retryWithExponentialBackoff(
+        retries: Int = 3,
+        initialDelay: Long = 1000L,
+        maxDelay: Long = 10000L,
+        factor: Double = 2.0,
+        block: suspend () -> T
+    ): T? {
+        var currentDelay = initialDelay
+        repeat(retries - 1) {
+            try {
+                return block()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            delay(currentDelay)
+            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+        }
+        return try {
+            block()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     private fun isDuplicateProblem(context: Context, imageName: String): Boolean {
         val database = Firebase.firestore
@@ -185,61 +296,40 @@ object FirebaseDatabase {
             }
     }
 
-    fun addNewUser(context: Context, provider: String): Boolean {
+    fun addNewUser(context: Context): Boolean {
+        val loggedUser = auth.currentUser
+        val newUser = User(
+            loggedUser?.uid,
+            loggedUser?.displayName,
+            loggedUser?.email
+        )
 
-        val loggedUser = Firebase.auth.currentUser
-        val database = Firebase.firestore
-
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                return@OnCompleteListener
+        if (NetworkUtil.isNetworkAvailable(context)) {
+            loggedUser?.let {
+                firestore.collection("users").document(it.uid)
+                    .set(newUser).addOnSuccessListener {
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.welcome),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.errorLogging),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@addOnFailureListener
+                    }
             }
-
-            val token = task.result
-            val newUser = User(
-                loggedUser?.uid,
-                loggedUser?.displayName,
-                loggedUser?.photoUrl.toString(),
-                loggedUser?.email,
-                loggedUser?.phoneNumber,
-                provider,
-                token,
-                listOf(),
-                listOf(),
-                null,
-                null
-            )
-
-            if (NetworkUtil.isNetworkAvailable(context)) {
-                loggedUser?.let {
-                    database.collection("users").document(it.uid)
-                        .set(newUser).addOnSuccessListener {
-                            Toast.makeText(
-                                context,
-                                context.resources.getString(R.string.welcome),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(
-                                context,
-                                context.resources.getString(R.string.errorLogging),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@addOnFailureListener
-                        }
-                }
-            } else {
-                Toast.makeText(
-                    context,
-                    context.resources.getString(R.string.errorUploading),
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@OnCompleteListener
-            }
-        })
-
-
+        } else {
+            Toast.makeText(
+                context,
+                context.resources.getString(R.string.errorLogging),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
         return true
     }
 
@@ -303,8 +393,8 @@ object FirebaseDatabase {
         suspendCoroutine { continuation ->
             val docRef = Firebase.firestore.collection("problems").whereEqualTo("problemID", id)
             docRef.get()
-                .addOnSuccessListener { document ->
-                    val documents = document.documents
+                .addOnSuccessListener { documentResponse ->
+                    val documents = documentResponse.documents
                     for (document in documents) {
                         val problem = document.toObject(Problem::class.java)
                         if (problem != null) {
@@ -314,27 +404,7 @@ object FirebaseDatabase {
 
                 }
                 .addOnFailureListener { exception ->
-                    Log.d(TAG, "Error getting documents: ", exception)
-                }
-        }
-
-    suspend fun getUserProblems(problems: List<String>): List<Problem> =
-        suspendCoroutine { continuation ->
-            val colRef = Firebase.firestore.collection("problems")
-            colRef.get()
-                .addOnSuccessListener { querySnapshot ->
-                    val documents = querySnapshot.documents
-                    val problemList = mutableListOf<Problem>()
-                    for (document in documents) {
-                        val problem = document.toObject(Problem::class.java)
-                        if (problem != null && problem.problemID in problems) {
-                            problemList.add(problem)
-                        }
-                    }
-                    continuation.resume(problemList)
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(TAG, "Error getting documents: ", exception)
+                    continuation.resume(null)
                 }
         }
 
@@ -398,14 +468,34 @@ object FirebaseDatabase {
 
     suspend fun getSupportedCities() = suspendCoroutine {
         val database = Firebase.firestore
-        val colRef = database.collection("supportedCities").document("cities")
+        val colRef = database.collection("supportedCities")
         colRef.get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    it.resume(document.toObject(SupportedCities::class.java))
-                } else {
-                    it.resume(null)
+            .addOnSuccessListener { querySnapshot ->
+                val documents = querySnapshot.documents
+                val listOfSupportedCities = mutableListOf<SupportedCity>()
+                for (document in documents) {
+                    val event = SupportedCity(document.id, document.data?.get("cityName") as String)
+                    listOfSupportedCities.add(event)
                 }
+                it.resume(listOfSupportedCities)
+            }
+            .addOnFailureListener { e ->
+                it.resumeWithException(e)
+            }
+    }
+
+    suspend fun getProblemTypes() = suspendCoroutine {
+        val database = Firebase.firestore
+        val colRef = database.collection("problemType")
+        colRef.get()
+            .addOnSuccessListener { querySnapshot ->
+                val documents = querySnapshot.documents
+                val listOfProblemTypes = mutableListOf<ProblemType>()
+                for (document in documents) {
+                    val event = ProblemType(document.id, document.data?.get("type") as String)
+                    listOfProblemTypes.add(event)
+                }
+                it.resume(listOfProblemTypes)
             }
             .addOnFailureListener { e ->
                 it.resumeWithException(e)
@@ -422,6 +512,10 @@ object FirebaseDatabase {
                     for (document in documents) {
                         val event = document.toObject(Event::class.java)
                         if (event != null) {
+                            event.id = document.id
+                            /*if ((event.epochEnd!! * 1000) > System.currentTimeMillis()) {
+                                eventsList.add(event)
+                            }*/
                             eventsList.add(event)
                         }
                     }
@@ -433,6 +527,7 @@ object FirebaseDatabase {
 
         }
 
+
     suspend fun getMapItems(): List<MapItem> =
         suspendCoroutine { continuation ->
             val colRef = Firebase.firestore.collection("markers")
@@ -441,9 +536,15 @@ object FirebaseDatabase {
                     val documents = querySnapshot.documents
                     val itemsList = mutableListOf<MapItem>()
                     for (document in documents) {
-                        val item = document.toObject(MapItem::class.java)
-                        if (item != null) {
-                            itemsList.add(item)
+                        if (document != null) {
+                            val marker = MapItem(
+                                document.id,
+                                document.data?.get("type") as String,
+                                document.data?.get("lat") as Double,
+                                document.data?.get("lng") as Double,
+                                document.data?.get("address") as String
+                            )
+                            itemsList.add(marker)
                         }
                     }
                     continuation.resume(itemsList)
@@ -529,5 +630,34 @@ object FirebaseDatabase {
             }
     }
 
+    suspend fun getAllWebUsers(): ArrayList<WebUser>? = suspendCoroutine { continuation ->
+        val docRef = Firebase.firestore.collection("webUsers")
+        docRef.get()
+            .addOnSuccessListener { document ->
+                val documents = document.documents
+                if (documents.size == 0) {
+                    continuation.resume(null)
+                } else {
+                    var array = arrayListOf<WebUser>()
+                    for (documentA in documents) {
+                        if (documentA != null) {
+                            val user = WebUser(
+                                documentA.id,
+                                documentA.get("name") as String,
+                                documentA.get("city") as String,
+                                documentA.get("email") as String,
+                                documentA.get("lastActive") as Timestamp,
+                                documentA.get("role") as String
+                            )
+                            array.add(user)
+                        }
+                    }
+                    continuation.resume(array)
 
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "Error getting documents: ", exception)
+            }
+    }
 }

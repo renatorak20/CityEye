@@ -27,7 +27,7 @@ class ProblemDetailActivity : AppCompatActivity() {
 
     private lateinit var viewModel: ProblemDetailViewModel
     private lateinit var binding: ActivityProblemDetailBinding
-    private lateinit var chatAdapter: MessagesAdapter
+    private var chatAdapter: MessagesAdapter? = null
     private lateinit var manager: LinearLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,10 +37,25 @@ class ProblemDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         supportActionBar?.hide()
 
-        viewModel = ViewModelProvider(this).get(ProblemDetailViewModel::class.java)
+        viewModel = ViewModelProvider(this)[ProblemDetailViewModel::class.java]
 
-        viewModel.getProblem(intent.getStringExtra("problemID")!!)
-        viewModel.getAnswer(intent.getStringExtra("problemID")!!)
+        val query = FirebaseFirestore.getInstance().collection("messages")
+            .document(intent.getStringExtra("problemID")!!)
+            .collection("problemMessages")
+            .orderBy("time", Query.Direction.DESCENDING)
+        val options: FirestoreRecyclerOptions<Message> = FirestoreRecyclerOptions.Builder<Message>()
+            .setQuery(query, Message::class.java)
+            .build()
+
+        chatAdapter = MessagesAdapter(options, Firebase.auth.currentUser, this)
+
+        viewModel.fetchUsers()
+
+        viewModel.getUsers().observe(this) {
+            chatAdapter!!.updateUsers(it)
+            viewModel.getProblem(intent.getStringExtra("problemID")!!)
+            viewModel.getAnswer(intent.getStringExtra("problemID")!!)
+        }
 
         viewModel.getProblem().observe(this) { problem ->
             problem?.let {
@@ -63,26 +78,15 @@ class ProblemDetailActivity : AppCompatActivity() {
                 binding.imageLoadingIndicator.hide()
             }
 
-            if (problem.uid == Firebase.auth.uid) {
+            if (problem.uid == Firebase.auth.currentUser?.uid) {
                 manager = LinearLayoutManager(this)
                 manager.reverseLayout = true
                 binding.messageRecyclerView.adapter = chatAdapter
                 binding.messageRecyclerView.layoutManager = manager
                 binding.fab.visibility = View.VISIBLE
-
-
             }
 
         }
-
-        val query = FirebaseFirestore.getInstance().collection("messages")
-            .document(intent.getStringExtra("problemID")!!)
-            .collection("problemMessages")
-            .orderBy("time", Query.Direction.DESCENDING)
-        val options: FirestoreRecyclerOptions<Message> = FirestoreRecyclerOptions.Builder<Message>()
-            .setQuery(query, Message::class.java)
-            .build()
-        chatAdapter = MessagesAdapter(options, Firebase.auth.currentUser, this)
 
         viewModel.getAnswer().observe(this) { answer ->
             if (answer == null) {
@@ -135,12 +139,16 @@ class ProblemDetailActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         binding.messageRecyclerView.recycledViewPool.clear()
-        chatAdapter.notifyDataSetChanged()
-        chatAdapter.startListening()
+        if (chatAdapter != null) {
+            chatAdapter!!.notifyDataSetChanged()
+            chatAdapter!!.startListening()
+        }
     }
 
     override fun onStop() {
         super.onStop()
-        chatAdapter.stopListening()
+        if (chatAdapter != null) {
+            chatAdapter!!.stopListening()
+        }
     }
 }

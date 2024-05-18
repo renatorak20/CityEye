@@ -29,7 +29,7 @@ class NotificationsActivity : AppCompatActivity() {
         Firebase.auth.currentUser?.let { viewModel.getUserFromDatabase(it.uid) }
 
         viewModel.getUser().observe(this) {
-            viewModel.getUserNotifications()
+            //viewModel.getUserNotifications()
         }
         viewModel.getNotifications().observe(this) {
             setNotifications()
@@ -47,14 +47,14 @@ class NotificationsActivity : AppCompatActivity() {
         Firebase.auth.currentUser?.let { viewModel.getUserFromDatabase(it.uid) }
 
         viewModel.getUser().observe(this) {
-            viewModel.getUserNotifications()
+            //viewModel.getUserNotifications()
         }
         viewModel.getNotifications().observe(this) {
             setNotifications()
         }
     }
 
-    fun setNotifications() {
+    private fun setNotifications() {
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = RecyclerViewNotificationsAdapter(

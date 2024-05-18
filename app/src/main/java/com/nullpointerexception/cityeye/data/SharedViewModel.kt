@@ -18,12 +18,13 @@ import com.google.maps.GeoApiContext
 import com.google.maps.PlacesApi
 import com.google.maps.model.PlaceType
 import com.google.maps.model.PlacesSearchResponse
+import com.google.maps.model.RankBy
 import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.entities.Event
 import com.nullpointerexception.cityeye.entities.MapItem
-import com.nullpointerexception.cityeye.entities.SupportedCities
+import com.nullpointerexception.cityeye.entities.SupportedCity
 import com.nullpointerexception.cityeye.entities.User
-import com.nullpointerexception.cityeye.firebase.FirebaseDatabase
+import com.nullpointerexception.cityeye.firebase.FirebaseRepository
 import com.nullpointerexception.cityeye.util.LocationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +34,8 @@ import com.google.maps.model.LatLng as NewLatLng
 
 
 class SharedViewModel : ViewModel() {
+
+    private val firebaseRepository = FirebaseRepository()
 
     private val _myCoordinates = MutableLiveData<LatLng>()
     var myCoordinates: LiveData<LatLng> = _myCoordinates
@@ -60,15 +63,14 @@ class SharedViewModel : ViewModel() {
 
     fun loadProblemCoordinates() {
         viewModelScope.launch {
-            val response = FirebaseDatabase.getAllProblems()
+            val response = firebaseRepository.getAllProblems()
             val coordinates: MutableList<LatLng> = mutableListOf()
 
             for (problem in response) {
                 problem.location_lat?.toDouble()?.let {
                     problem.location_lon?.toDouble()?.let { it1 ->
                         LatLng(
-                            it,
-                            it1
+                            it, it1
                         )
                     }
                 }?.let {
@@ -85,20 +87,20 @@ class SharedViewModel : ViewModel() {
     }
 
 
-    private val _supportedCities = MutableLiveData<SupportedCities>()
-    var supportedCities: LiveData<SupportedCities> = _supportedCities
+    private val _supportedCities = MutableLiveData<List<SupportedCity>>()
+    var supportedCities: LiveData<List<SupportedCity>> = _supportedCities
 
-    fun getSupportedCities(): MutableLiveData<SupportedCities> {
+    fun getSupportedCities(): MutableLiveData<List<SupportedCity>> {
         return _supportedCities
     }
 
-    fun setSupportedCities(sc: SupportedCities) {
+    fun setSupportedCities(sc: List<SupportedCity>) {
         _supportedCities.value = sc
     }
 
     fun getlatestSupportedCities() {
         viewModelScope.launch {
-            val response = FirebaseDatabase.getSupportedCities()
+            val response = firebaseRepository.getSupportedCities()
             response?.let { setSupportedCities(it) }
 
         }
@@ -131,29 +133,21 @@ class SharedViewModel : ViewModel() {
             }
 
             val apiContext: GeoApiContext = GeoApiContext.Builder()
-                .apiKey(activity.applicationContext.getString(R.string.maps_key))
-                .build()
+                .apiKey(activity.applicationContext.getString(R.string.maps_key)).build()
 
             request = withContext(Dispatchers.IO) {
-
                 var nLocation: LatLng? = if (location is Location) {
                     LatLng(location.latitude, location.longitude)
                 } else {
                     location as LatLng
                 }
-
                 PlacesApi.nearbySearchQuery(
-                    apiContext,
-                    NewLatLng(nLocation?.latitude!!, nLocation.longitude)
-                )
-                    .radius(met)
-                    .type(PlaceType.CAFE)
-                    .language("en")
-                    .await()
+                    apiContext, NewLatLng(nLocation?.latitude!!, nLocation.longitude)
+                ).radius(met).type(PlaceType.CAFE).type(PlaceType.RESTAURANT)
+                    .rankby(RankBy.PROMINENCE).language("en").await()
             }
 
             setPlaces(request)
-
         }
     }
 
@@ -166,13 +160,13 @@ class SharedViewModel : ViewModel() {
         _inSupportedCity.value = isc
     }
 
-    fun checkIfInSupportedCity(context: Context, latLng: LatLng, supportedCities: SupportedCities) {
+    fun checkIfInSupportedCity(
+        context: Context, latLng: LatLng, supportedCities: List<SupportedCity>
+    ) {
         viewModelScope.launch {
             setInSupportedCity(
                 LocationUtil.checkIfInSupportedCity(
-                    context,
-                    latLng,
-                    supportedCities
+                    context, latLng, supportedCities
                 )
             )
         }
@@ -191,7 +185,7 @@ class SharedViewModel : ViewModel() {
 
     fun getAllEvents() {
         viewModelScope.launch {
-            val events = FirebaseDatabase.getEvents()
+            val events = firebaseRepository.getEvents()
             setEvents(events)
         }
     }
@@ -210,7 +204,7 @@ class SharedViewModel : ViewModel() {
 
     fun getLatestMapItems() {
         viewModelScope.launch {
-            val response = FirebaseDatabase.getMapItems()
+            val response = firebaseRepository.getMapItems()
             setMapItems(response)
         }
     }
@@ -222,17 +216,13 @@ class SharedViewModel : ViewModel() {
 
             val location = withContext(Dispatchers.IO) {
                 if (ActivityCompat.checkSelfPermission(
-                        activity.applicationContext,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                        activity.applicationContext, Manifest.permission.ACCESS_FINE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        activity.applicationContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
+                        activity.applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
                     ActivityCompat.requestPermissions(
-                        activity,
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        99
+                        activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 99
                     )
                 } else {
                     fusedLocationClient.lastLocation.await()
@@ -258,7 +248,7 @@ class SharedViewModel : ViewModel() {
 
     fun getAllUsers() {
         viewModelScope.launch {
-            setUsers(FirebaseDatabase.getAllUsers()!!)
+            setUsers(firebaseRepository.getAllUsers()!!)
         }
     }
 
