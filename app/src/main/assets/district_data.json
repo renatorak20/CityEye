@@ -1,0 +1,236 @@
+[{
+	"district": "btrs",
+	"hq": "fgn",
+	"density": 2113.0,
+	"lat": 29.9155,
+	"lon": -95.484
+},
+{
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.9156,
+"lon": -95.474
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 213.0,
+"lat": 29.9165,
+"lon": -95.464
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.9175,
+"lon": -95.284
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 213.0,
+"lat": 29.9158,
+"lon": -95.984
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.9195,
+"lon": -95.884
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 213.0,
+"lat": 29.9145,
+"lon": -95.384
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.9255,
+"lon": -95.184
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 213.0,
+"lat": 29.9655,
+"lon": -95.184
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.9155,
+"lon": -95.184
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 4413.0,
+"lat": 29.9355,
+"lon": -95.284
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.9165,
+"lon": -95.483
+},
+	{
+		"district": "btrs",
+		"hq": "fgn",
+		"density": 213.0,
+		"lat": 29.1255,
+		"lon": -95.134
+	}, {
+	"district": "hgn",
+	"hq": "ghmn",
+	"density": 275.0,
+	"lat": 29.1455,
+	"lon": -95.154
+},
+	{
+		"district": "btrs",
+		"hq": "fgn",
+		"density": 3213.0,
+		"lat": 29.1655,
+		"lon": -95.174
+	}, {
+	"district": "hgn",
+	"hq": "ghmn",
+	"density": 275.0,
+	"lat": 29.1855,
+	"lon": -95.194
+},
+	{
+		"district": "btrs",
+		"hq": "fgn",
+		"density": 213.0,
+		"lat": 29.2055,
+		"lon": -95.214
+	}, {
+	"district": "hgn",
+	"hq": "ghmn",
+	"density": 275.0,
+	"lat": 29.3055,
+	"lon": -95.344
+},
+	{
+		"district": "btrs",
+		"hq": "fgn",
+		"density": 2213.0,
+		"lat": 29.5555,
+		"lon": -95.684
+	}, {
+	"district": "hgn",
+	"hq": "ghmn",
+	"density": 275.0,
+	"lat": 29.8755,
+	"lon": -95.674
+},
+	{
+		"district": "btrs",
+		"hq": "fgn",
+		"density": 213.0,
+		"lat": 29.9055,
+		"lon": -95.164
+	}, {
+	"district": "hgn",
+	"hq": "ghmn",
+	"density": 275.0,
+	"lat": 29.5755,
+	"lon": -95.534
+},
+	{
+		"district": "btrs",
+		"hq": "fgn",
+		"density": 6213.0,
+		"lat": 29.5115,
+		"lon": -95.964
+	}, {
+	"district": "hgn",
+	"hq": "ghmn",
+	"density": 2275.0,
+	"lat": 29.5695,
+	"lon": -95.694
+},
+	{
+	"district": "btrs",
+	"hq": "fgn",
+	"density": 7213.0,
+	"lat": 29.6941,
+	"lon": -95.2346
+},
+	{
+"district": "hgn",
+"hq": "ghmn",
+"density": 2575.0,
+"lat": 29.5941,
+"lon": -95.7946
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 1213.0,
+"lat": 29.7941,
+"lon": -95.2746
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 1275.0,
+"lat": 29.6931,
+"lon": -95.1946
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 1213.0,
+"lat": 29.2941,
+"lon": -95.8346
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.3941,
+"lon": -95.2746
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 2213.0,
+"lat": 29.8941,
+"lon": -95.2646
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.2941,
+"lon": -95.2546
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 8213.0,
+"lat": 29.1941,
+"lon": -95.4346
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.2941,
+"lon": -95.3346
+},
+{
+"district": "btrs",
+"hq": "fgn",
+"density": 213.0,
+"lat": 29.6741,
+"lon": -95.2346
+}, {
+"district": "hgn",
+"hq": "ghmn",
+"density": 275.0,
+"lat": 29.6641,
+"lon": -95.1346
+}]

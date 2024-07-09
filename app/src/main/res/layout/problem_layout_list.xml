@@ -2,33 +2,33 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/layout"
-    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_margin="4dp"
     android:background="@drawable/rounded_bckgr_bottom_nav_bar"
-    android:layout_margin="4dp">
+    android:foreground="?android:attr/selectableItemBackground">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/loadIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
         android:layout_marginStart="50dp"
+        android:indeterminate="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/image"
-        android:visibility="invisible"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_margin="15dp"
-        tools:src="@drawable/userimage"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/userimage" />
 
     <TextView
         android:id="@+id/title"
@@ -48,8 +48,8 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/calendar"
         app:layout_constraintTop_toBottomOf="@+id/title"
@@ -59,8 +59,8 @@
         android:id="@+id/calendar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
         android:src="@drawable/ic_calendar"
         app:layout_constraintStart_toEndOf="@+id/image"
         app:layout_constraintTop_toBottomOf="@+id/title"
