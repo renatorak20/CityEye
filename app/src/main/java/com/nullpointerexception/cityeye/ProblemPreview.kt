@@ -66,6 +66,74 @@ class ProblemPreview : AppCompatActivity() {
             )
         }
 
+        binding.fab.setOnClickListener {
+
+            if (!binding.problemTitleEditText.checkIfCharactersExceed(50) && !binding.problemDescriptionEditText.checkIfCharactersExceed(
+                    200
+                )
+            ) {
+
+                if (!binding.problemTitleEditText.checkIfHasLessAmountOfCharacters() && !binding.problemDescriptionEditText.checkIfHasLessAmountOfCharacters()) {
+
+                    binding.loadIndicator.show()
+                    binding.fab.isEnabled = false
+                    when (problemTypeString) {
+                        "Marker" -> {
+                            viewModel.addProblem(
+                                this,
+                                binding.problemTitleEditText.text(),
+                                binding.problemDescriptionEditText.text(),
+                                viewModel.image.value!!,
+                                viewModel.coordinates.value!!,
+                                viewModel.address.value!!,
+                                binding.spinner.text(),
+                                null,
+                                binding.spinnerEvent.text()
+                            )
+                        }
+                        "Event" -> {
+                            viewModel.addProblem(
+                                this,
+                                binding.problemTitleEditText.text(),
+                                binding.problemDescriptionEditText.text(),
+                                viewModel.image.value!!,
+                                viewModel.coordinates.value!!,
+                                viewModel.address.value!!,
+                                binding.spinner.text(),
+                                binding.spinnerEvent.text(),
+                                null
+                            )
+                        }
+                        else -> {
+                            viewModel.addProblem(
+                                this,
+                                binding.problemTitleEditText.text(),
+                                binding.problemDescriptionEditText.text(),
+                                viewModel.image.value!!,
+                                viewModel.coordinates.value!!,
+                                viewModel.address.value!!,
+                                binding.spinner.text(),
+                                null,
+                                null
+                            )
+                        }
+                    }
+                } else {
+                    Snackbar.make(
+                        window.decorView.rootView,
+                        resources.getString(R.string.titleOrDescriptionNotLongEnough),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                Snackbar.make(
+                    window.decorView.rootView,
+                    resources.getString(R.string.titleOrDescriptionTooLong),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        }
+
         (binding.selector as? MaterialAutoCompleteTextView)?.setOnItemClickListener { adapterView, view, i, l ->
             val problemType = viewModel.problemType.value?.get(i)?.type ?: ""
             if (problemType == "Event" || problemType == "Marker") {
@@ -83,89 +151,15 @@ class ProblemPreview : AppCompatActivity() {
                 } else {
                     binding.spinnerEvent.hint = "Marker"
                     (binding.selectorEvent as? MaterialAutoCompleteTextView)?.setAdapter(
-                        ArrayAdapter(
-                            this,
+                        ArrayAdapter(this,
                             R.layout.spinner_item,
                             viewModel.markers.value?.map { it.address?.split(",")!![0].trim() }
-                                ?.toList() ?: emptyList()
-                        )
-                    )
+                                ?.toList() ?: emptyList()))
                 }
             } else {
                 binding.spinnerEvent.visibility = View.GONE
                 problemTypeString = ""
             }
-
-            binding.fab.setOnClickListener {
-
-                if (!binding.problemTitleEditText.checkIfCharactersExceed(50) && !binding.problemDescriptionEditText.checkIfCharactersExceed(
-                        200
-                    )
-                ) {
-
-                    if (!binding.problemTitleEditText.checkIfHasLessAmountOfCharacters() && !binding.problemDescriptionEditText.checkIfHasLessAmountOfCharacters()) {
-
-                        when (problemTypeString) {
-                            "Marker" -> {
-                                viewModel.addProblem(
-                                    this,
-                                    binding.problemTitleEditText.text(),
-                                    binding.problemDescriptionEditText.text(),
-                                    viewModel.image.value!!,
-                                    viewModel.coordinates.value!!,
-                                    viewModel.address.value!!,
-                                    binding.spinner.text(),
-                                    null,
-                                    binding.spinnerEvent.text()
-                                )
-                            }
-                            "Event" -> {
-                                viewModel.addProblem(
-                                    this,
-                                    binding.problemTitleEditText.text(),
-                                    binding.problemDescriptionEditText.text(),
-                                    viewModel.image.value!!,
-                                    viewModel.coordinates.value!!,
-                                    viewModel.address.value!!,
-                                    binding.spinner.text(),
-                                    binding.spinnerEvent.text(),
-                                    null
-                                )
-                            }
-                            else -> {
-                                viewModel.addProblem(
-                                    this,
-                                    binding.problemTitleEditText.text(),
-                                    binding.problemDescriptionEditText.text(),
-                                    viewModel.image.value!!,
-                                    viewModel.coordinates.value!!,
-                                    viewModel.address.value!!,
-                                    binding.spinner.text(),
-                                    null,
-                                    null
-                                )
-                            }
-                        }
-
-                        binding.loadIndicator.show()
-                        binding.fab.isEnabled = false
-
-                    } else {
-                        Snackbar.make(
-                            window.decorView.rootView,
-                            resources.getString(R.string.titleOrDescriptionNotLongEnough),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    Snackbar.make(
-                        window.decorView.rootView,
-                        resources.getString(R.string.titleOrDescriptionTooLong),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
 
             binding.back.setOnClickListener {
                 finish()

@@ -40,7 +40,7 @@ object CameraUtil {
     private fun compressImageFile(file: File, quality: Int): File {
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
         val matrix = Matrix()
-        matrix.postRotate(90f)
+        //matrix.postRotate(90f)
         val rotatedBitmap =
             Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
         val compressedFile = File(file.absolutePath)

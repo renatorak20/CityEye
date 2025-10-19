@@ -15,27 +15,10 @@ import java.util.Date
 
 class OtherUtilities {
 
-    fun getRandomString(length: Int): String {
-        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-        val randomString = (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
-        val currentDateTime =
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        val hash = "$randomString$currentDateTime"
-        return hash.toList().shuffled().joinToString("")
-    }
-
-    fun makeCoordinatesBundle(coordinates: LatLng): Bundle {
+    private fun makeCoordinatesBundle(coordinates: LatLng): Bundle {
         val args = Bundle()
         args.putParcelable("coordinates", coordinates)
         return args
-    }
-
-    fun getTimeFromEpoch(epoch: Long): String {
-        val date = Date(epoch * 1000)
-        val dateFormat = SimpleDateFormat("HH:mm")
-        return dateFormat.format(date)
     }
 
     fun getDateFromEpoch(epoch: Long): String {

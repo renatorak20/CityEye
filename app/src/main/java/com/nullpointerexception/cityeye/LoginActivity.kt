@@ -144,7 +144,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun TextInputLayout.getText(): String {
+    private fun TextInputLayout.getText(): String {
         return this.editText!!.text.toString()
     }
 }
