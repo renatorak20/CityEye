@@ -14,5 +14,6 @@ data class Problem(
     val location_lon: String? = null,
     val eventId: String? = null,
     val markerId: String? = null,
+    val category: String? = null
 )
 

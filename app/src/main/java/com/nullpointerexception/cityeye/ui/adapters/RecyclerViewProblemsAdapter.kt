@@ -36,7 +36,6 @@ class RecyclerViewProblemsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProblemHolderView {
-
         val view: View =
             LayoutInflater.from(parent.context).inflate(R.layout.problem_layout_list, parent, false)
 
@@ -83,7 +82,7 @@ class RecyclerViewProblemsAdapter(
     }
 
 
-    fun startProblemActivity(problemID: String) {
+    private fun startProblemActivity(problemID: String) {
         val intent = Intent(activity, ProblemDetailActivity::class.java)
         intent.putExtra("problemID", problemID)
         activity.startActivity(intent)

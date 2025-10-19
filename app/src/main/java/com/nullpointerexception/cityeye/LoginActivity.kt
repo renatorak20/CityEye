@@ -80,9 +80,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.loginButton.setOnClickListener {
-            if (binding.emailField.getText().isNotEmpty() && binding.passwordField.getText()
-                    .isNotEmpty()
-            ) {
+            if (binding.emailField.getText().isEmpty()) {
+                Toast.makeText(this, getString(R.string.emailRequired), Toast.LENGTH_SHORT).show()
+            } else if (binding.passwordField.getText().isEmpty()) {
+                Toast.makeText(this, getString(R.string.passwordRequired), Toast.LENGTH_SHORT).show()
+            } else {
                 SessionUtil(this).signInWithMail(
                     this,
                     binding.root,

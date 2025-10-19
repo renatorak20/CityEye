@@ -19,7 +19,7 @@ class ProblemDetailViewModel : ViewModel() {
     private val _problem = MutableLiveData<Problem>()
     var problem: LiveData<Problem> = _problem
 
-    fun setProblem(problem: Problem) {
+    private fun setProblem(problem: Problem) {
         _problem.value = problem
     }
 
@@ -28,9 +28,8 @@ class ProblemDetailViewModel : ViewModel() {
     }
 
     private val _allUsers = MutableLiveData<List<WebUser>>()
-    var users: LiveData<List<WebUser>> = _allUsers
 
-    fun setUsers(users: List<WebUser>) {
+    private fun setUsers(users: List<WebUser>) {
         _allUsers.value = users
     }
 
@@ -70,7 +69,7 @@ class ProblemDetailViewModel : ViewModel() {
 
     private val _answer = MutableLiveData<Answer?>()
 
-    fun setAnswer(answer: Answer?) {
+    private fun setAnswer(answer: Answer?) {
         _answer.value = answer
     }
 
@@ -87,6 +86,4 @@ class ProblemDetailViewModel : ViewModel() {
             )
         }
     }
-
-
 }

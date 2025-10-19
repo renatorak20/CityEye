@@ -17,7 +17,7 @@ import com.nullpointerexception.cityeye.databinding.ProblemLayoutListBinding
 import com.nullpointerexception.cityeye.entities.Problem
 import com.nullpointerexception.cityeye.util.OtherUtilities
 
-class RecyclerViewProfileAdapter(val context: Context, val problems: ArrayList<Problem>) :
+class RecyclerViewProfileAdapter(val context: Context, private val problems: ArrayList<Problem>) :
     RecyclerView.Adapter<RecyclerViewProfileAdapter.ProblemViewHolder>() {
 
     class ProblemViewHolder(view: View) : RecyclerView.ViewHolder(view) {

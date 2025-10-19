@@ -3,14 +3,10 @@ package com.nullpointerexception.cityeye
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nullpointerexception.cityeye.data.NotificationsViewModel
 import com.nullpointerexception.cityeye.databinding.ActivityNotificationsBinding
-import com.nullpointerexception.cityeye.entities.UserNotification
-import com.nullpointerexception.cityeye.ui.adapters.RecyclerViewNotificationsAdapter
-import com.nullpointerexception.cityeye.util.DateComparator
 
 class NotificationsActivity : AppCompatActivity() {
 
@@ -28,13 +24,6 @@ class NotificationsActivity : AppCompatActivity() {
 
         Firebase.auth.currentUser?.let { viewModel.getUserFromDatabase(it.uid) }
 
-        viewModel.getUser().observe(this) {
-            //viewModel.getUserNotifications()
-        }
-        viewModel.getNotifications().observe(this) {
-            setNotifications()
-        }
-
         binding.backButton.setOnClickListener {
             finish()
         }
@@ -45,22 +34,5 @@ class NotificationsActivity : AppCompatActivity() {
         super.onStart()
 
         Firebase.auth.currentUser?.let { viewModel.getUserFromDatabase(it.uid) }
-
-        viewModel.getUser().observe(this) {
-            //viewModel.getUserNotifications()
-        }
-        viewModel.getNotifications().observe(this) {
-            setNotifications()
-        }
     }
-
-    private fun setNotifications() {
-        val recyclerView = binding.recyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = RecyclerViewNotificationsAdapter(
-            this,
-            (viewModel.getNotifications().value as List<UserNotification>).sortedWith(DateComparator())
-        )
-    }
-
 }

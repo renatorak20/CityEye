@@ -105,42 +105,46 @@ class ProblemPreview : AppCompatActivity() {
 
                     if (!binding.problemTitleEditText.checkIfHasLessAmountOfCharacters() && !binding.problemDescriptionEditText.checkIfHasLessAmountOfCharacters()) {
 
-                        if (problemTypeString == "Marker") {
-                            viewModel.addProblem(
-                                this,
-                                binding.problemTitleEditText.text(),
-                                binding.problemDescriptionEditText.text(),
-                                viewModel.image.value!!,
-                                viewModel.coordinates.value!!,
-                                viewModel.address.value!!,
-                                binding.spinner.text(),
-                                null,
-                                binding.spinnerEvent.text()
-                            )
-                        } else if (problemTypeString == "Event") {
-                            viewModel.addProblem(
-                                this,
-                                binding.problemTitleEditText.text(),
-                                binding.problemDescriptionEditText.text(),
-                                viewModel.image.value!!,
-                                viewModel.coordinates.value!!,
-                                viewModel.address.value!!,
-                                binding.spinner.text(),
-                                binding.spinnerEvent.text(),
-                                null
-                            )
-                        } else {
-                            viewModel.addProblem(
-                                this,
-                                binding.problemTitleEditText.text(),
-                                binding.problemDescriptionEditText.text(),
-                                viewModel.image.value!!,
-                                viewModel.coordinates.value!!,
-                                viewModel.address.value!!,
-                                binding.spinner.text(),
-                                null,
-                                null
-                            )
+                        when (problemTypeString) {
+                            "Marker" -> {
+                                viewModel.addProblem(
+                                    this,
+                                    binding.problemTitleEditText.text(),
+                                    binding.problemDescriptionEditText.text(),
+                                    viewModel.image.value!!,
+                                    viewModel.coordinates.value!!,
+                                    viewModel.address.value!!,
+                                    binding.spinner.text(),
+                                    null,
+                                    binding.spinnerEvent.text()
+                                )
+                            }
+                            "Event" -> {
+                                viewModel.addProblem(
+                                    this,
+                                    binding.problemTitleEditText.text(),
+                                    binding.problemDescriptionEditText.text(),
+                                    viewModel.image.value!!,
+                                    viewModel.coordinates.value!!,
+                                    viewModel.address.value!!,
+                                    binding.spinner.text(),
+                                    binding.spinnerEvent.text(),
+                                    null
+                                )
+                            }
+                            else -> {
+                                viewModel.addProblem(
+                                    this,
+                                    binding.problemTitleEditText.text(),
+                                    binding.problemDescriptionEditText.text(),
+                                    viewModel.image.value!!,
+                                    viewModel.coordinates.value!!,
+                                    viewModel.address.value!!,
+                                    binding.spinner.text(),
+                                    null,
+                                    null
+                                )
+                            }
                         }
 
                         binding.loadIndicator.show()
@@ -196,22 +200,10 @@ class ProblemPreview : AppCompatActivity() {
         binding.problemImage.load(viewModel.image.value)
     }
 
-    fun TextInputLayout.text(): String {
-        return this.editText?.text.toString()
-    }
+    fun TextInputLayout.text() = this.editText?.text.toString()
 
-    private fun TextInputLayout.checkIfCharactersExceed(amount: Int): Boolean {
-        if (this.text().length > amount) {
-            return true
-        }
-        return false
-    }
+    private fun TextInputLayout.checkIfCharactersExceed(amount: Int) = this.text().length > amount
 
-    private fun TextInputLayout.checkIfHasLessAmountOfCharacters(): Boolean {
-        if (this.text().length < 5) {
-            return true
-        }
-        return false
-    }
+    private fun TextInputLayout.checkIfHasLessAmountOfCharacters() = this.text().length < 5
 
 }

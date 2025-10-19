@@ -10,7 +10,6 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -23,11 +22,10 @@ import com.nullpointerexception.cityeye.entities.MapItem
 import com.nullpointerexception.cityeye.entities.Message
 import com.nullpointerexception.cityeye.entities.Problem
 import com.nullpointerexception.cityeye.entities.ProblemType
-import com.nullpointerexception.cityeye.entities.SupportedCity
 import com.nullpointerexception.cityeye.entities.User
-import com.nullpointerexception.cityeye.entities.UserNotification
 import com.nullpointerexception.cityeye.entities.WebUser
 import com.nullpointerexception.cityeye.util.NetworkUtil
+import com.nullpointerexception.cityeye.util.OtherUtilities
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import java.io.File
@@ -44,7 +42,6 @@ class FirebaseRepository {
     private val storage = Firebase.storage
     private val auth = Firebase.auth
 
-    /*
     suspend fun addNormalProblem(
         context: Context,
         title: String,
@@ -52,106 +49,7 @@ class FirebaseRepository {
         savedImageFile: File,
         location: LatLng,
         address: String,
-        eventName: String?,
-        markerAddress: String?
-    ): Boolean {
-
-        val problemID = firestore.collection("problems").document()
-        val eventId = getEvents().find { it.title == eventName }?.id
-        val markerId =
-            getMapItems().find { markerAddress?.let { it1 -> it.address?.contains(it1) } == true }?.id
-
-        val problem = Problem(
-            problemID.id,
-            title.trim(),
-            description.trim(),
-            auth.uid!!,
-            address,
-            savedImageFile.name,
-            (System.currentTimeMillis() / 1000),
-            false,
-            location.latitude.toString(),
-            location.longitude.toString(),
-            eventId,
-            markerId
-        )
-
-
-        if (NetworkUtil.isNetworkAvailable(context) && !isDuplicateProblem(
-                context,
-                savedImageFile.name
-            )
-        ) {
-            val imagesRef = storage.reference.child("images/${savedImageFile.name}")
-            val userRef = firestore.collection("users").document(auth.currentUser!!.uid)
-
-            val uploadTask = suspendCoroutine { continuation ->
-                imagesRef.putFile(Uri.fromFile(savedImageFile))
-                    .addOnSuccessListener {
-                        continuation.resume(true)
-                    }
-                    .addOnFailureListener {
-                        continuation.resume(false)
-                    }
-            }
-
-            if (uploadTask) {
-                val batchResult = suspendCoroutine { continuation ->
-                    firestore.runBatch { batch ->
-                        batch.update(userRef, "problems", FieldValue.arrayUnion(problemID))
-                        batch.set(problemID, problem)
-                    }.addOnSuccessListener {
-                        Toast.makeText(
-                            context,
-                            context.resources.getString(R.string.problemUploaded),
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        FirebaseDatabase.getInstance().reference.child("messages")
-                            .setValue(problemID)
-                            .addOnSuccessListener {
-                                continuation.resume(true)
-                            }
-                            .addOnFailureListener {
-                                continuation.resume(false)
-                            }
-                    }.addOnFailureListener {
-                        continuation.resume(false)
-                    }
-                }
-
-                return if (batchResult) {
-                    true
-                } else {
-                    Toast.makeText(
-                        context,
-                        context.resources.getString(R.string.errorUploading),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    removeImage(savedImageFile.name)
-                    false
-                }
-            } else {
-                Toast.makeText(
-                    context,
-                    context.resources.getString(R.string.errorUploading),
-                    Toast.LENGTH_SHORT
-                ).show()
-                return false
-            }
-        } else {
-            return false
-        }
-    }
-*/
-
-    suspend fun addNormalProblem(
-        context: Context,
-        title: String,
-        description: String,
-        savedImageFile: File,
-        location: LatLng,
-        address: String,
+        category: String,
         eventName: String?,
         markerAddress: String?
     ): Boolean {
@@ -172,7 +70,8 @@ class FirebaseRepository {
             location.latitude.toString(),
             location.longitude.toString(),
             eventId,
-            markerId
+            markerId,
+            category
         )
 
         if (NetworkUtil.isNetworkAvailable(context) && !isDuplicateProblem(
@@ -182,21 +81,17 @@ class FirebaseRepository {
         ) {
             val imagesRef = storage.reference.child("images/${savedImageFile.name}")
             val userRef = firestore.collection("users").document(auth.currentUser!!.uid)
+            val problemsRef = firestore.collection("problems")
 
-            val uploadSuccess = retryWithExponentialBackoff {
+            val uploadSuccess = OtherUtilities().retryWithExponentialBackoff {
                 imagesRef.putFile(Uri.fromFile(savedImageFile)).await()
                 true
             }
 
             if (uploadSuccess == true) {
-                val transactionResult = retryWithExponentialBackoff {
-                    firestore.runTransaction { transaction ->
-                        transaction.update(userRef, "problems", FieldValue.arrayUnion(problemID))
-                        transaction.set(problemID, problem)
-                    }.await()
-
-                    FirebaseDatabase.getInstance().reference.child("messages")
-                        .setValue(problemID.id).await()
+                val transactionResult = OtherUtilities().retryWithExponentialBackoff {
+                    userRef.update("problems", FieldValue.arrayUnion(problemID))
+                    problemsRef.add(problem)
                     true
                 }
 
@@ -226,31 +121,6 @@ class FirebaseRepository {
             }
         } else {
             return false
-        }
-    }
-
-    suspend fun <T> retryWithExponentialBackoff(
-        retries: Int = 3,
-        initialDelay: Long = 1000L,
-        maxDelay: Long = 10000L,
-        factor: Double = 2.0,
-        block: suspend () -> T
-    ): T? {
-        var currentDelay = initialDelay
-        repeat(retries - 1) {
-            try {
-                return block()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            delay(currentDelay)
-            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
-        }
-        return try {
-            block()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
         }
     }
 
@@ -342,7 +212,6 @@ class FirebaseRepository {
             if (!task.isSuccessful) {
                 return@OnCompleteListener
             }
-
             val token = task.result
 
             if (NetworkUtil.isNetworkAvailable(context)) {
@@ -355,10 +224,9 @@ class FirebaseRepository {
                 }
             }
         })
-
     }
 
-    fun removeImage(imageName: String): Boolean {
+    private fun removeImage(imageName: String): Boolean {
         val storageRef = Firebase.storage.reference
 
         val desertRef = storageRef.child("images/${imageName}")
@@ -403,36 +271,9 @@ class FirebaseRepository {
                     }
 
                 }
-                .addOnFailureListener { exception ->
+                .addOnFailureListener {
                     continuation.resume(null)
                 }
-        }
-
-    suspend fun getUserNotifications(notifications: List<String>): List<UserNotification> =
-        suspendCoroutine { continuation ->
-            if (notifications.isNotEmpty()) {
-                val colRef = Firebase.firestore.collection("userNotifications")
-                colRef.get()
-                    .addOnSuccessListener { querySnapshot ->
-                        val documents = querySnapshot.documents
-                        val notificationsList = mutableListOf<UserNotification>()
-                        for (document in documents) {
-                            if (notifications.contains(document.id)) {
-                                val notification = document.toObject(UserNotification::class.java)
-                                if (notification != null) {
-                                    notificationsList.add(notification)
-                                }
-                            }
-                        }
-                        continuation.resume(notificationsList)
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.d(TAG, "Error getting documents: ", exception)
-                        continuation.resumeWithException(exception)
-                    }
-            } else {
-                continuation.resume(emptyList())
-            }
         }
 
     suspend fun getAllProblems(): List<Problem> =
@@ -455,34 +296,6 @@ class FirebaseRepository {
                 }
 
         }
-
-    fun markNotificationAsRead(notificationID: String) {
-        val database = Firebase.firestore
-        database.collection("userNotifications").document(notificationID)
-            .update("isRead", true).addOnSuccessListener {
-            }
-            .addOnFailureListener {
-                Log.i("FAILURE", it.toString())
-            }
-    }
-
-    suspend fun getSupportedCities() = suspendCoroutine {
-        val database = Firebase.firestore
-        val colRef = database.collection("supportedCities")
-        colRef.get()
-            .addOnSuccessListener { querySnapshot ->
-                val documents = querySnapshot.documents
-                val listOfSupportedCities = mutableListOf<SupportedCity>()
-                for (document in documents) {
-                    val event = SupportedCity(document.id, document.data?.get("cityName") as String)
-                    listOfSupportedCities.add(event)
-                }
-                it.resume(listOfSupportedCities)
-            }
-            .addOnFailureListener { e ->
-                it.resumeWithException(e)
-            }
-    }
 
     suspend fun getProblemTypes() = suspendCoroutine {
         val database = Firebase.firestore
@@ -513,9 +326,6 @@ class FirebaseRepository {
                         val event = document.toObject(Event::class.java)
                         if (event != null) {
                             event.id = document.id
-                            /*if ((event.epochEnd!! * 1000) > System.currentTimeMillis()) {
-                                eventsList.add(event)
-                            }*/
                             eventsList.add(event)
                         }
                     }
@@ -560,7 +370,7 @@ class FirebaseRepository {
         docRef.get()
             .addOnSuccessListener { document ->
                 val documents = document.documents
-                if (documents.size == 0) {
+                if (documents.isEmpty()) {
                     continuation.resume(null)
                 } else {
                     var problem: Answer? = null
@@ -611,10 +421,10 @@ class FirebaseRepository {
         docRef.get()
             .addOnSuccessListener { document ->
                 val documents = document.documents
-                if (documents.size == 0) {
+                if (documents.isEmpty()) {
                     continuation.resume(null)
                 } else {
-                    var array = arrayListOf<User>()
+                    val array = arrayListOf<User>()
                     for (document in documents) {
                         val user = document.toObject(User::class.java)
                         if (user != null) {
@@ -635,10 +445,10 @@ class FirebaseRepository {
         docRef.get()
             .addOnSuccessListener { document ->
                 val documents = document.documents
-                if (documents.size == 0) {
+                if (documents.isEmpty()) {
                     continuation.resume(null)
                 } else {
-                    var array = arrayListOf<WebUser>()
+                    val array = arrayListOf<WebUser>()
                     for (documentA in documents) {
                         if (documentA != null) {
                             val user = WebUser(

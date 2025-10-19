@@ -69,6 +69,7 @@ class ProblemPreviewViewModel : ViewModel() {
                 savedImageFile,
                 location,
                 address,
+                category,
                 eventTitle,
                 markerAddress
             )

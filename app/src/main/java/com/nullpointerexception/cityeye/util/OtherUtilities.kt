@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.google.android.gms.maps.model.LatLng
 import com.nullpointerexception.cityeye.ProblemPreview
+import kotlinx.coroutines.delay
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -64,6 +65,31 @@ class OtherUtilities {
         val sdf = SimpleDateFormat("E, MMM dd · HH:mm")
 
         return sdf.format(date)
+    }
+
+    suspend fun <T> retryWithExponentialBackoff(
+        retries: Int = 3,
+        initialDelay: Long = 1000L,
+        maxDelay: Long = 10000L,
+        factor: Double = 2.0,
+        block: suspend () -> T
+    ): T? {
+        var currentDelay = initialDelay
+        repeat(retries - 1) {
+            try {
+                return block()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            delay(currentDelay)
+            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+        }
+        return try {
+            block()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 }

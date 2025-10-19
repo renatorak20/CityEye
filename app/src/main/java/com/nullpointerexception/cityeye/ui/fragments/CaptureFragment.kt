@@ -40,6 +40,7 @@ import com.nullpointerexception.cityeye.LoginActivity
 import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.data.SharedViewModel
 import com.nullpointerexception.cityeye.databinding.FragmentCaptureBinding
+import com.nullpointerexception.cityeye.entities.MarkerType
 import com.nullpointerexception.cityeye.util.CameraUtil
 import com.nullpointerexception.cityeye.util.OtherUtilities
 import com.nullpointerexception.cityeye.util.PermissionUtils
@@ -55,7 +56,6 @@ class CaptureFragment : Fragment() {
     private lateinit var binding: FragmentCaptureBinding
     private lateinit var viewModel: SharedViewModel
     private val REQUEST_IMAGE_CAPTURE = 1
-    private var dialog: AlertDialog? = null
     private lateinit var myMap: SupportMapFragment
     private var shouldCheckLocation = true
 
@@ -97,34 +97,21 @@ class CaptureFragment : Fragment() {
             binding.indicator.hide()
 
             for (item in viewModel.getMapItems().value!!) {
+                val icon = if (item.type == MarkerType.SOLAR_BENCH.type) {
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_solar)
+                } else {
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_car_charger)
+                }
 
-                if (item.type == "solarnaKlupa") {
-
-                    val bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.ic_solar)
-
-                    item.lat?.let { it1 -> LatLng(it1, item.lng!!) }?.let { it2 ->
-                        MarkerOptions()
-                            .position(it2)
-                            .icon(bitmapDescriptor)
-                    }?.let { it3 -> googleMap.addMarker(it3) }
-
-                } else if (item.type == "autoPunjac") {
-
-                    val bitmapDescriptor =
-                        BitmapDescriptorFactory.fromResource(R.drawable.ic_car_charger)
-
-                    item.lat?.let { it1 -> item.lng?.let { it2 -> LatLng(it1, it2) } }?.let { it2 ->
-                        MarkerOptions()
-                            .position(it2)
-                            .icon(bitmapDescriptor)
-                    }?.let { it3 -> googleMap.addMarker(it3) }
+                if (item.lat != null && item.lng != null) {
+                    val latLng = LatLng(item.lat, item.lng!!)
+                    googleMap.addMarker(MarkerOptions()
+                        .position(latLng)
+                        .icon(icon))
                 }
             }
-
             viewModel.areItemsLoaded = true
-
         }
-
         binding.capture.visibility = View.VISIBLE
     }
 
@@ -133,12 +120,6 @@ class CaptureFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-            100
-        )
         viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         binding = FragmentCaptureBinding.inflate(inflater, container, false)
 
@@ -152,41 +133,15 @@ class CaptureFragment : Fragment() {
             startActivity(Intent(requireContext(), LoginActivity::class.java))
         }
         viewModel.getMyFusedLocationNow(requireActivity())
-        viewModel.getlatestSupportedCities()
 
         viewModel.getMyCoordinates().observe(viewLifecycleOwner) {
-            if (viewModel.getSupportedCities().value?.isNotEmpty() == true) {
-
-                viewModel.checkIfInSupportedCity(
-                    requireContext(), viewModel.myCoordinates.value!!,
-                    viewModel.getSupportedCities().value!!
-                )
-
-                viewModel.getInSupportedCity().observe(viewLifecycleOwner) {
-                    if (it) {
-                        myMap =
-                            (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)!!
-                        myMap.getMapAsync(callback)
-                    } else {
-                        shouldCheckLocation = false
-                        dialog?.dismiss()
-                        dialog = MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(getString(R.string.notInSupportedCityTitle))
-                            .setMessage(getString(R.string.notInSupportedCityDescription))
-                            .setPositiveButton(getString(R.string.retry)) { dialog, which ->
-                                shouldCheckLocation = true
-                                viewModel.getlatestSupportedCities()
-                            }
-                            .show()
-                    }
-                }
-            }
+            myMap =
+                (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)!!
+            myMap.getMapAsync(callback)
         }
 
         viewModel.loadProblemCoordinates()
         viewModel.getMyFusedLocationNow(requireActivity())
-
-
 
         binding.indicator.show()
 

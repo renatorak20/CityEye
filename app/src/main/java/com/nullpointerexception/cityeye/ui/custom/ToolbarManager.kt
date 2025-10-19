@@ -16,7 +16,7 @@ import com.nullpointerexception.cityeye.databinding.CustomToolbarBinding
 import com.nullpointerexception.cityeye.intro.IntroApp
 
 class ToolbarManager(
-    val toolbar: CustomToolbarBinding,
+    private val toolbar: CustomToolbarBinding,
     user: FirebaseUser,
     val activity: MainActivity
 ) {

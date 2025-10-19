@@ -38,43 +38,6 @@ class LeaderboardFragment : Fragment() {
 
         viewModel.getUsers().observe(viewLifecycleOwner) {
             binding.pullToRefresh.isRefreshing = false
-/*
-            val sortedUsers = it.sortedBy { user -> user.problems?.size }
-                .filter { user -> user.problems?.isNotEmpty()!! }
-                .filter { user -> user.displayName != null }.reversed()
-
-            val adapter =
-                RecyclerViewLeaderboard(requireContext(), sortedUsers.subList(3, sortedUsers.size))
-
-            binding.recyclerView.adapter = adapter
-            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            binding.recyclerView.itemAnimator = null
-
-            binding.firstPlaceImage.load(sortedUsers[0].photoUrl) {
-                transformations(CircleCropTransformation())
-                placeholder(requireContext().getDrawable(R.drawable.userimage))
-                error(requireContext().getDrawable(R.drawable.userimage))
-            }
-            binding.secondPlace.load(sortedUsers[1].photoUrl) {
-                transformations(CircleCropTransformation())
-                placeholder(requireContext().getDrawable(R.drawable.userimage))
-                error(requireContext().getDrawable(R.drawable.userimage))
-            }
-            binding.thirdPlace.load(sortedUsers[2].photoUrl) {
-                transformations(CircleCropTransformation())
-                placeholder(requireContext().getDrawable(R.drawable.userimage))
-                error(requireContext().getDrawable(R.drawable.userimage))
-            }
-
-            binding.thirdName.text = sortedUsers[2].displayName
-            binding.thirdPoints.text = "${sortedUsers[2].problems?.size!! * 100}pts"
-
-            binding.secondName.text = sortedUsers[1].displayName
-            binding.secondPoints.text = "${sortedUsers[1].problems?.size!! * 100}pts"
-
-            binding.firstName.text = sortedUsers[0].displayName
-            binding.firstPoints.text = "${sortedUsers[0].problems?.size!! * 100}pts"
-*/
         }
 
         binding.pullToRefresh.setOnRefreshListener {

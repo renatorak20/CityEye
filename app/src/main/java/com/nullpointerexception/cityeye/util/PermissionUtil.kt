@@ -74,19 +74,4 @@ object PermissionUtils {
         }
         return false
     }
-
-    fun createNotificationChannel(context: Context) {
-        val channelId = "my_channel_id"
-        val channelName = "My Channel"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(channelId, channelName, importance).apply {
-            description = "My channel description"
-        }
-
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
-
-    }
-
 }

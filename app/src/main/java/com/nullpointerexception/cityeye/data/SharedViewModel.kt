@@ -3,7 +3,6 @@ package com.nullpointerexception.cityeye.data
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.app.ActivityCompat
@@ -22,10 +21,8 @@ import com.google.maps.model.RankBy
 import com.nullpointerexception.cityeye.R
 import com.nullpointerexception.cityeye.entities.Event
 import com.nullpointerexception.cityeye.entities.MapItem
-import com.nullpointerexception.cityeye.entities.SupportedCity
 import com.nullpointerexception.cityeye.entities.User
 import com.nullpointerexception.cityeye.firebase.FirebaseRepository
-import com.nullpointerexception.cityeye.util.LocationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -49,9 +46,8 @@ class SharedViewModel : ViewModel() {
     }
 
     private val _problemCoordinates = MutableLiveData<List<LatLng>>()
-    var problemCoordinates: LiveData<List<LatLng>> = _problemCoordinates
 
-    fun setCoordinates(newCoordinates: List<LatLng>) {
+    private fun setCoordinates(newCoordinates: List<LatLng>) {
         _problemCoordinates.value = newCoordinates
     }
 
@@ -63,14 +59,14 @@ class SharedViewModel : ViewModel() {
 
     fun loadProblemCoordinates() {
         viewModelScope.launch {
-            val response = firebaseRepository.getAllProblems()
+            val problems = firebaseRepository.getAllProblems()
             val coordinates: MutableList<LatLng> = mutableListOf()
 
-            for (problem in response) {
-                problem.location_lat?.toDouble()?.let {
-                    problem.location_lon?.toDouble()?.let { it1 ->
+            for (problem in problems) {
+                problem.location_lat?.toDouble()?.let {lat ->
+                    problem.location_lon?.toDouble()?.let { long ->
                         LatLng(
-                            it, it1
+                            lat, long
                         )
                     }
                 }?.let {
@@ -86,33 +82,13 @@ class SharedViewModel : ViewModel() {
         }
     }
 
-
-    private val _supportedCities = MutableLiveData<List<SupportedCity>>()
-    var supportedCities: LiveData<List<SupportedCity>> = _supportedCities
-
-    fun getSupportedCities(): MutableLiveData<List<SupportedCity>> {
-        return _supportedCities
-    }
-
-    fun setSupportedCities(sc: List<SupportedCity>) {
-        _supportedCities.value = sc
-    }
-
-    fun getlatestSupportedCities() {
-        viewModelScope.launch {
-            val response = firebaseRepository.getSupportedCities()
-            response?.let { setSupportedCities(it) }
-
-        }
-    }
-
     private val _places = MutableLiveData<PlacesSearchResponse>()
 
     fun getPlaces(): MutableLiveData<PlacesSearchResponse> {
         return _places
     }
 
-    fun setPlaces(sc: PlacesSearchResponse) {
+    private fun setPlaces(sc: PlacesSearchResponse) {
         _places.value = sc
     }
 
@@ -121,8 +97,8 @@ class SharedViewModel : ViewModel() {
     fun getNearbyPlaces(activity: Activity, myLocation: LatLng?, met: Int) {
 
         viewModelScope.launch {
-            var request: PlacesSearchResponse?
-            var fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
+            val request: PlacesSearchResponse?
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
             Places.initialize(
                 activity.applicationContext,
                 activity.applicationContext.getString(R.string.maps_key)
@@ -136,39 +112,18 @@ class SharedViewModel : ViewModel() {
                 .apiKey(activity.applicationContext.getString(R.string.maps_key)).build()
 
             request = withContext(Dispatchers.IO) {
-                var nLocation: LatLng? = if (location is Location) {
+                val nLocation: LatLng = if (location is Location) {
                     LatLng(location.latitude, location.longitude)
                 } else {
                     location as LatLng
                 }
                 PlacesApi.nearbySearchQuery(
-                    apiContext, NewLatLng(nLocation?.latitude!!, nLocation.longitude)
+                    apiContext, NewLatLng(nLocation.latitude, nLocation.longitude)
                 ).radius(met).type(PlaceType.CAFE).type(PlaceType.RESTAURANT)
                     .rankby(RankBy.PROMINENCE).language("en").await()
             }
 
             setPlaces(request)
-        }
-    }
-
-    var _inSupportedCity = MutableLiveData<Boolean>()
-    fun getInSupportedCity(): MutableLiveData<Boolean> {
-        return _inSupportedCity
-    }
-
-    fun setInSupportedCity(isc: Boolean) {
-        _inSupportedCity.value = isc
-    }
-
-    fun checkIfInSupportedCity(
-        context: Context, latLng: LatLng, supportedCities: List<SupportedCity>
-    ) {
-        viewModelScope.launch {
-            setInSupportedCity(
-                LocationUtil.checkIfInSupportedCity(
-                    context, latLng, supportedCities
-                )
-            )
         }
     }
 
@@ -192,9 +147,8 @@ class SharedViewModel : ViewModel() {
 
 
     private val _mapItems = MutableLiveData<List<MapItem>>()
-    var mapItems: LiveData<List<MapItem>> = _mapItems
 
-    fun setMapItems(items: List<MapItem>) {
+    private fun setMapItems(items: List<MapItem>) {
         _mapItems.value = items
     }
 
@@ -212,7 +166,7 @@ class SharedViewModel : ViewModel() {
 
     fun getMyFusedLocationNow(activity: Activity) {
         viewModelScope.launch {
-            var fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
 
             val location = withContext(Dispatchers.IO) {
                 if (ActivityCompat.checkSelfPermission(
@@ -238,7 +192,7 @@ class SharedViewModel : ViewModel() {
 
 
     private val _users = MutableLiveData<List<User>>()
-    fun setUsers(items: List<User>) {
+    private fun setUsers(items: List<User>) {
         _users.value = items
     }
 

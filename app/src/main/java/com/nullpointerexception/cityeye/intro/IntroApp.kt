@@ -39,7 +39,7 @@ class IntroApp : AppIntro() {
         startLoginActivity()
     }
 
-    fun startLoginActivity() {
+    private fun startLoginActivity() {
         Firebase.auth.signOut()
         startActivity(Intent(applicationContext, LoginActivity::class.java))
         finish()

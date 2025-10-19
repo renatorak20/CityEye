@@ -63,7 +63,7 @@ class RecyclerViewEvents(
         }
 
         holder.binding.share.setOnClickListener {
-            var textToShare = context.getString(
+            val textToShare = context.getString(
                 R.string.shareEvent,
                 event.title,
                 event.location,

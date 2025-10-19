@@ -13,6 +13,7 @@ import com.google.firebase.ktx.Firebase
 import com.nullpointerexception.cityeye.data.ProfileViewModel
 import com.nullpointerexception.cityeye.databinding.ActivityProfileBinding
 import com.nullpointerexception.cityeye.ui.adapters.RecyclerViewProfileAdapter
+import kotlin.random.Random
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -34,7 +35,6 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.getProblems().observe(this) {
             setProblems()
             binding.content.problems.pullToRefresh.isRefreshing = false
-
             if (it.isNotEmpty()) {
                 binding.content.header.firstReport.alpha = 1f
             }
@@ -83,7 +83,7 @@ class ProfileActivity : AppCompatActivity() {
         finishAfterTransition()
     }
 
-    fun setImage() {
+    private fun setImage() {
         val imageUrl = Firebase.auth.currentUser!!.photoUrl
         if (imageUrl.toString() == "null") return
         binding.content.header.userImage.load(imageUrl) {
@@ -93,11 +93,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    fun setInfo() {
-        binding.content.header.username.text = viewModel.user.value!!.displayName ?: "User471659"
-    }
-
-    fun setProblems() {
+    private fun setProblems() {
         val recyclerView = binding.content.problems.problemsRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         val problemsSorted =
@@ -106,5 +102,9 @@ class ProfileActivity : AppCompatActivity() {
             this,
             ArrayList(problemsSorted)
         )
+    }
+
+    private fun setInfo() {
+        binding.content.header.username.text = viewModel.user.value!!.displayName ?: "User${Random(50).nextInt()}"
     }
 }

@@ -6,7 +6,6 @@ import android.location.Geocoder
 import android.widget.Toast
 import com.google.android.gms.maps.model.LatLng
 import com.nullpointerexception.cityeye.R
-import com.nullpointerexception.cityeye.entities.SupportedCity
 import java.io.IOException
 import java.util.Locale
 import kotlin.coroutines.resume
@@ -37,24 +36,4 @@ object LocationUtil {
                 continuation.resume(null)
             }
         }
-
-
-    suspend fun checkIfInSupportedCity(
-        context: Context,
-        latLng: LatLng,
-        supportedCities: List<SupportedCity>
-    ): Boolean {
-        val address = getAddressFromCo(context, latLng)
-        var validCity = false
-
-        for (city in supportedCities) {
-            if (address?.contains(city.cityName) == true) {
-                validCity = true
-                break
-            }
-        }
-        return validCity
-    }
-
-
 }

@@ -49,7 +49,7 @@ class RecyclerViewPlacesAdapter(
 
         val workingTime = place.openingHours
 
-        var hoursText = if (workingTime != null) {
+        val hoursText = if (workingTime != null) {
             if (workingTime.openNow != null && !workingTime.openNow) {
                 "Closed"
             } else if (workingTime.permanentlyClosed != null && workingTime.permanentlyClosed == true) {
